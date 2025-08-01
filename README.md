@@ -209,6 +209,10 @@ composer check
 
 Refynd is open-source software licensed under the [MIT license](LICENSE).
 
+---
+
+**Created by [Jade Monathrae Lewis](mailto:jade@refynd.dev)** - *Founder & Creator of Refynd*
+
 ## 🌟 Ecosystem
 
 - **[refynd/refynd](https://github.com/refynd/refynd)** - Application skeleton for creating new projects
