@@ -1,0 +1,27 @@
+<?php
+
+namespace {{ namespace }};
+
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
+/**
+ * {{ className }}
+ */
+class {{ className }}
+{
+    /**
+     * Handle an incoming request
+     */
+    public function handle(Request $request, callable $next): Response
+    {
+        // TODO: Implement middleware logic here
+        
+        // Execute the request
+        $response = $next($request);
+        
+        // TODO: Post-processing logic here
+        
+        return $response;
+    }
+}

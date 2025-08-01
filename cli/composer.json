@@ -1,0 +1,57 @@
+{
+    "name": "refynd/cli",
+    "description": "Command line interface for the Refynd PHP framework",
+    "keywords": ["refynd", "cli", "framework", "php", "tool", "generator"],
+    "homepage": "https://github.com/refynd/cli",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Jade Monathrae Lewis",
+            "email": "jade@refynd.dev",
+            "role": "Founder & Creator"
+        }
+    ],
+    "support": {
+        "issues": "https://github.com/refynd/cli/issues",
+        "source": "https://github.com/refynd/cli"
+    },
+    "require": {
+        "php": "^8.2",
+        "symfony/console": "^7.0",
+        "symfony/filesystem": "^7.0",
+        "symfony/process": "^7.0",
+        "twig/twig": "^3.0",
+        "refynd/framework": "^1.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.0",
+        "phpstan/phpstan": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Refynd\\Cli\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "bin": ["bin/refynd"],
+    "scripts": {
+        "test": "phpunit",
+        "analyse": "phpstan analyse src --memory-limit=256M",
+        "check": [
+            "@analyse",
+            "@test"
+        ]
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true
+    }
+}
