@@ -195,12 +195,17 @@ class PerformanceBenchmark
     {
         echo "🏗️  Benchmarking Bootstrap Performance...\n";
         
+        // Create a temporary directory for testing
+        $tempDir = sys_get_temp_dir() . '/refynd_benchmark_' . uniqid();
+        mkdir($tempDir, 0777, true);
+        
         // Create a simple app profile for testing
-        $profile = new \Refynd\Config\AppProfile([
-            'modules' => [
-                \Refynd\Modules\CacheModule::class,
-                \Refynd\Modules\RoutingModule::class,
-            ]
+        $profile = new \Refynd\Config\AppProfile($tempDir, 'testing');
+        
+        // Override the modules configuration
+        $profile->set('modules', [
+            \Refynd\Modules\CacheModule::class,
+            \Refynd\Modules\RoutingModule::class,
         ]);
         
         $times = [];
@@ -208,9 +213,29 @@ class PerformanceBenchmark
         // Test bootstrap times
         for ($i = 0; $i < 10; $i++) {
             $start = microtime(true);
-            $engine = new Engine($profile);
-            $engine->runHttp(); // This will boot the engine
-            $times[] = microtime(true) - $start;
+            
+            try {
+                $engine = new Engine($profile);
+                // Just measure construction and boot time, not full HTTP handling
+                $reflection = new \ReflectionMethod($engine, 'boot');
+                $reflection->setAccessible(true);
+                $reflection->invoke($engine);
+                
+                $times[] = microtime(true) - $start;
+            } catch (\Exception $e) {
+                // Skip failed boots
+                continue;
+            }
+        }
+        
+        // Cleanup
+        if (is_dir($tempDir)) {
+            rmdir($tempDir);
+        }
+        
+        if (empty($times)) {
+            echo "  Bootstrap benchmark failed - no successful boots\n\n";
+            return;
         }
         
         $averageTime = array_sum($times) / count($times);
