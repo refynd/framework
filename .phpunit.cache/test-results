@@ -1,0 +1,1 @@
+{"version":1,"defects":[],"times":{"Tests\\Unit\\ContainerTest::test_container_can_bind_and_resolve_simple_class":0,"Tests\\Unit\\ContainerTest::test_container_can_make_class_with_automatic_resolution":0.002,"Tests\\Unit\\ContainerTest::test_container_singleton_returns_same_instance":0}}

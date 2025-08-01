@@ -1,0 +1,13 @@
+parameters:
+    level: 6
+    paths:
+        - src
+    excludePaths:
+        - src/Support/helpers.php
+    ignoreErrors:
+        - '#Unsafe usage of new static\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::query\(\)#'
+        - identifier: missingType.iterableValue
+        - identifier: missingType.generics
+        - '#Property .* is never read, only written\.#'
+        - '#has an unused parameter#'
