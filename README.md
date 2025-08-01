@@ -3,8 +3,9 @@
 <p align="center">
 <img src="https://img.shields.io/badge/PHP-8.2%2B-blue" alt="PHP Version">
 <img src="https://img.shields.io/badge/License-MIT-green" alt="License">
-<img src="https://img.shields.io/badge/Version-1.0-brightgreen" alt="Version">
-<img src="https://img.shields.io/packagist/v/refynd/framework" alt="Packagist Version">
+<img src="https://img.shields.io/github/v/tag/refynd/framework?label=Version" alt="Latest Version">
+<img src="https://img.shields.io/packagist/v/refynd/framework?label=Packagist" alt="Packagist Version">
+<img src="https://img.shields.io/packagist/dt/refynd/framework" alt="Total Downloads">
 </p>
 
 > **"In the forge of code, we craft not just software, but experiences."**
