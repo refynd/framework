@@ -164,8 +164,8 @@ Refynd powers applications that matter:
 
 ## 📚 Documentation
 
-- **[Core Capabilities](CURRENT_CAPABILITIES.md)** - Complete component overview
-- **[What You Can Build](WHAT_YOU_CAN_BUILD.md)** - Application examples and patterns
+- **[Core Capabilities](docs/CURRENT_CAPABILITIES.md)** - Complete component overview
+- **[What You Can Build](docs/WHAT_YOU_CAN_BUILD.md)** - Application examples and patterns
 - **[API Reference](https://github.com/refynd/framework/wiki)** - Detailed API documentation
 
 ## 🤝 Contributing
