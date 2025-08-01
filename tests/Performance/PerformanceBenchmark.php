@@ -1,6 +1,6 @@
 <?php
 
-namespace Refynd\Performance;
+namespace Tests\Performance;
 
 use Refynd\Bootstrap\Engine;
 use Refynd\Container\Container;
@@ -18,10 +18,12 @@ class PerformanceBenchmark
 {
     protected array $results = [];
     protected int $iterations = 1000;
+    protected bool $silent = false;
     
-    public function __construct(int $iterations = 1000)
+    public function __construct(int $iterations = 1000, bool $silent = false)
     {
         $this->iterations = $iterations;
+        $this->silent = $silent;
     }
     
     /**
@@ -29,7 +31,7 @@ class PerformanceBenchmark
      */
     public function runAll(): array
     {
-        echo "🚀 Running Refynd Performance Benchmarks...\n\n";
+        $this->output("🚀 Running Refynd Performance Benchmarks...\n\n");
         
         $this->benchmarkContainerResolution();
         $this->benchmarkRouteMatching();
@@ -40,11 +42,21 @@ class PerformanceBenchmark
     }
     
     /**
+     * Output text only if not in silent mode
+     */
+    protected function output(string $text): void
+    {
+        if (!$this->silent) {
+            echo $text;
+        }
+    }
+    
+    /**
      * Benchmark container dependency resolution
      */
     public function benchmarkContainerResolution(): void
     {
-        echo "📦 Benchmarking Container Resolution...\n";
+        $this->output("📦 Benchmarking Container Resolution...\n");
         
         $container = new Container();
         
@@ -81,9 +93,9 @@ class PerformanceBenchmark
             'iterations' => $this->iterations,
         ];
         
-        echo "  Without cache: {$this->results['container']['without_cache']}s\n";
-        echo "  With cache: {$this->results['container']['with_cache']}s\n";
-        echo "  Improvement: {$this->results['container']['improvement_percent']}%\n\n";
+        $this->output("  Without cache: {$this->results['container']['without_cache']}s\n");
+        $this->output("  With cache: {$this->results['container']['with_cache']}s\n");
+        $this->output("  Improvement: {$this->results['container']['improvement_percent']}%\n\n");
     }
     
     /**
@@ -315,6 +327,14 @@ class PerformanceBenchmark
             $averageImprovement = array_sum($overallImprovements) / count($overallImprovements);
             echo "🎯 Average Performance Improvement: " . round($averageImprovement, 2) . "%\n";
         }
+    }
+    
+    /**
+     * Get benchmark results
+     */
+    public function getResults(): array
+    {
+        return $this->results;
     }
 }
 
