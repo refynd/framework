@@ -1,4 +1,6 @@
-# Building with Refynd
+# Buil## 🎨 The Platform Canvas
+
+Refynd provides a complete palette of tools for digital artisans:g with Refynd
 
 > **"Great applications are not built—they are crafted, one elegant line at a time."**
 

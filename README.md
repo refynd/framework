@@ -1,4 +1,4 @@
-# Refynd Framework
+# Refynd
 
 <p align="center">
 <img src="https://img.shields.io/badge/PHP-8.2%2B-blue" alt="PHP Version">
@@ -9,27 +9,27 @@
 
 > **"In the forge of code, we craft not just software, but experiences."**
 
-Refynd is a modern PHP framework that combines **enterprise-grade power** with **elegant simplicity**. Built for developers who refuse to compromise between functionality and beauty, Refynd provides everything you need to craft exceptional web applications.
+Refynd is a modern PHP platform that combines **enterprise-grade power** with **elegant simplicity**. Built for developers who refuse to compromise between functionality and beauty, Refynd provides everything you need to craft exceptional web applications.
 
 **GitHub Repository**: https://github.com/refynd/framework
 
 ## ✨ The Philosophy
 
-**Every line of code tells a story.** Refynd believes that great software emerges when powerful architecture meets intuitive design. We've created a framework that feels natural to use while providing the robust foundation your applications deserve.
+**Every line of code tells a story.** Refynd believes that great software emerges when powerful architecture meets intuitive design. We've created a platform that feels natural to use while providing the robust foundation your applications deserve.
 
 **Refynd doesn't just work—it flows.**
 
 ## 🚀 Installation
 
-Install the Refynd Framework via Composer:
+Install Refynd via Composer:
 
 ```bash
 composer require refynd/framework
 ```
 
-> **Note:** This is the framework package. To create new applications, use the [Refynd application skeleton](https://github.com/refynd/refynd).
+> **Note:** This is the core package. To create new applications, use the [Refynd application skeleton](https://github.com/refynd/refynd).
 
-## 🎯 Framework Features
+## 🎯 Core Features
 
 ### Core Foundation
 - **Engine** - Orchestrates your application's lifecycle with precision
@@ -163,7 +163,7 @@ Refynd powers applications that matter:
 
 ## 📚 Documentation
 
-- **[Framework Capabilities](CURRENT_CAPABILITIES.md)** - Complete component overview
+- **[Core Capabilities](CURRENT_CAPABILITIES.md)** - Complete component overview
 - **[What You Can Build](WHAT_YOU_CAN_BUILD.md)** - Application examples and patterns
 - **[API Reference](https://github.com/refynd/framework/wiki)** - Detailed API documentation
 
@@ -176,7 +176,7 @@ We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) f
 ```bash
 # Clone the repository
 git clone https://github.com/refynd/framework.git
-cd framework
+cd refynd
 
 # Install dependencies
 composer install
@@ -206,7 +206,7 @@ composer check
 
 ## 📜 License
 
-Refynd Framework is open-source software licensed under the [MIT license](LICENSE).
+Refynd is open-source software licensed under the [MIT license](LICENSE).
 
 ## 🌟 Ecosystem
 
