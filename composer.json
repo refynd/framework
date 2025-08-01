@@ -54,9 +54,6 @@
             "@analyse",
             "@test"
         ],
-        "install-cli": [
-            "composer global require refynd/cli"
-        ],
         "post-install-cmd": [
             "@php -r \"echo '\\n🚀 Refynd Framework installed successfully!\\n';\"",
             "@php -r \"echo '💡 Tip: Install the CLI tool globally with: composer global require refynd/cli\\n\\n';\""
