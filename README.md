@@ -28,6 +28,20 @@ Install Refynd via Composer:
 composer require refynd/framework
 ```
 
+### CLI Tool (Optional but Recommended)
+
+For the best development experience, install the Refynd CLI tool globally:
+
+```bash
+composer global require refynd/cli
+```
+
+The CLI provides powerful commands for:
+- **Project creation**: `refynd new my-app`
+- **Code generation**: `refynd make:controller UserController`
+- **Development server**: `refynd serve`
+- **Enhanced testing**: `refynd test --coverage`
+
 > **Note:** This is the core package. To create new applications, use the [Refynd application skeleton](https://github.com/refynd/refynd).
 
 ## 🎯 Core Features
@@ -215,8 +229,8 @@ Refynd is open-source software licensed under the [MIT license](LICENSE).
 
 ## 🌟 Ecosystem
 
+- **[refynd/cli](https://github.com/refynd/cli)** - Command line interface for development workflow
 - **[refynd/refynd](https://github.com/refynd/refynd)** - Application skeleton for creating new projects
-- **[refynd/cli](https://github.com/refynd/cli)** - Global CLI installer and project management
 
 ---
 

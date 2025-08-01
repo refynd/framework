@@ -1,0 +1,49 @@
+#!/usr/bin/env php
+<?php
+
+/**
+ * Refynd CLI Installer
+ * 
+ * This script helps install the Refynd CLI tool globally.
+ */
+
+echo "🚀 Refynd CLI Installer\n";
+echo "======================\n\n";
+
+// Check if Composer is available
+$composerCommand = 'composer';
+if (shell_exec('which composer') === null) {
+    if (shell_exec('which composer.phar') !== null) {
+        $composerCommand = 'composer.phar';
+    } else {
+        echo "❌ Composer not found. Please install Composer first.\n";
+        echo "   Visit: https://getcomposer.org/download/\n\n";
+        exit(1);
+    }
+}
+
+echo "📦 Installing Refynd CLI globally...\n";
+
+$command = "{$composerCommand} global require refynd/cli";
+$output = [];
+$returnCode = 0;
+
+exec($command . ' 2>&1', $output, $returnCode);
+
+if ($returnCode === 0) {
+    echo "✅ Refynd CLI installed successfully!\n\n";
+    echo "🎯 Available commands:\n";
+    echo "   refynd new <project>     - Create new application\n";
+    echo "   refynd make:controller   - Generate controller\n";
+    echo "   refynd make:model        - Generate model\n";
+    echo "   refynd serve             - Start development server\n";
+    echo "   refynd test              - Run tests\n\n";
+    echo "💡 Make sure your global Composer bin directory is in your PATH.\n";
+    echo "   Usually: ~/.composer/vendor/bin or ~/.config/composer/vendor/bin\n\n";
+} else {
+    echo "❌ Installation failed. Output:\n";
+    echo implode("\n", $output) . "\n\n";
+    echo "💡 Try installing manually:\n";
+    echo "   {$command}\n\n";
+    exit(1);
+}
