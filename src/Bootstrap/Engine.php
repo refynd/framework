@@ -26,15 +26,27 @@ class Engine
     protected ModuleManager $moduleManager;
     protected bool $booted = false;
     protected static ?Engine $instance = null;
+    
+    // Performance optimizations
+    protected array $lazyServices = [];
+    protected bool $debugMode = false;
+    protected float $bootStartTime;
+    protected array $bootMetrics = [];
 
     public function __construct(AppProfile $profile)
     {
+        $this->bootStartTime = microtime(true);
         $this->profile = $profile;
+        $this->debugMode = $profile->get('debug', false);
         $this->container = new Container();
         $this->moduleManager = new ModuleManager($this->container);
         
         static::$instance = $this;
         $this->registerCoreBindings();
+        
+        if ($this->debugMode) {
+            $this->bootMetrics['construct_time'] = microtime(true) - $this->bootStartTime;
+        }
     }
 
     /**
@@ -71,10 +83,19 @@ class Engine
             return;
         }
 
+        $bootStart = microtime(true);
+        
         $this->loadModules();
         $this->bootModules();
         
         $this->booted = true;
+        
+        if ($this->debugMode) {
+            $this->bootMetrics['boot_time'] = microtime(true) - $bootStart;
+            $this->bootMetrics['total_time'] = microtime(true) - $this->bootStartTime;
+            $this->bootMetrics['memory_usage'] = memory_get_usage();
+            $this->bootMetrics['peak_memory'] = memory_get_peak_usage();
+        }
     }
 
     /**
@@ -106,6 +127,28 @@ class Engine
         $this->container->singleton(AppProfile::class, fn() => $this->profile);
         $this->container->singleton(Engine::class, fn() => $this);
         $this->container->singleton(ModuleManager::class, fn() => $this->moduleManager);
+        
+        // Register lazy services for better performance
+        $this->registerLazyServices();
+    }
+    
+    /**
+     * Register lazy-loaded services
+     */
+    protected function registerLazyServices(): void
+    {
+        // Cache service with high-performance wrapper
+        $this->container->singleton('cache.high_performance', function ($container) {
+            $manager = $container->make(\Refynd\Cache\CacheManager::class);
+            return new \Refynd\Cache\HighPerformanceCache($manager->store());
+        });
+        
+        // Router with compilation enabled
+        $this->container->singleton('router.optimized', function ($container) {
+            $router = $container->make(\Refynd\Http\Router::class);
+            $router->setCompilationEnabled(true);
+            return $router;
+        });
     }
 
     /**
@@ -150,5 +193,65 @@ class Engine
         }
 
         return static::$instance->container;
+    }
+    
+    /**
+     * Get performance metrics
+     */
+    public function getPerformanceMetrics(): array
+    {
+        $metrics = $this->bootMetrics;
+        
+        if ($this->container instanceof Container) {
+            $metrics['container'] = $this->container->getCacheStats();
+        }
+        
+        return $metrics;
+    }
+    
+    /**
+     * Enable or disable debug mode
+     */
+    public function setDebugMode(bool $debug): void
+    {
+        $this->debugMode = $debug;
+    }
+    
+    /**
+     * Check if debug mode is enabled
+     */
+    public function isDebugMode(): bool
+    {
+        return $this->debugMode;
+    }
+    
+    /**
+     * Clear all performance caches
+     */
+    public function clearPerformanceCaches(): void
+    {
+        if ($this->container instanceof Container) {
+            $this->container->clearCaches();
+        }
+        
+        // Clear router cache if available
+        try {
+            $router = $this->container->make('router.optimized');
+            if (method_exists($router, 'clearCompilationCache')) {
+                $router->clearCompilationCache();
+            }
+        } catch (\Exception $e) {
+            // Router not available, ignore
+        }
+        
+        // Clear high-performance cache if available
+        try {
+            $cache = $this->container->make('cache.high_performance');
+            if (method_exists($cache, 'clearLocal')) {
+                $cache->clearLocal();
+            }
+        } catch (\Exception $e) {
+            // Cache not available, ignore
+        }
     }
 }

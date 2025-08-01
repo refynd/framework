@@ -17,10 +17,13 @@ class Router
     private array $routeGroups = [];
     private string $currentGroupPrefix = '';
     private array $currentGroupMiddleware = [];
+    private ?RouteCompiler $compiler = null;
+    private bool $compilationEnabled = true;
 
     public function __construct(Container $container)
     {
         $this->container = $container;
+        $this->compiler = new RouteCompiler();
     }
 
     public function get(string $uri, array|string|Closure $action): Route
@@ -105,6 +108,11 @@ class Router
         foreach ($methods as $method) {
             $this->routes[$method][] = $route;
         }
+        
+        // Compile the route for performance
+        if ($this->compilationEnabled && $this->compiler) {
+            $this->compiler->compile($route);
+        }
 
         return $route;
     }
@@ -119,13 +127,22 @@ class Router
             $method = 'GET';
         }
 
-        if (!isset($this->routes[$method])) {
-            return $this->createNotFoundResponse();
-        }
+        // Use compiled routes for faster matching
+        if ($this->compilationEnabled && $this->compiler) {
+            $match = $this->compiler->match($method, $uri);
+            if ($match) {
+                return $this->runRouteFromMatch($request, $match['route'], $match['parameters']);
+            }
+        } else {
+            // Fallback to legacy route matching
+            if (!isset($this->routes[$method])) {
+                return $this->createNotFoundResponse();
+            }
 
-        foreach ($this->routes[$method] as $route) {
-            if ($route->matches($uri)) {
-                return $this->runRoute($request, $route);
+            foreach ($this->routes[$method] as $route) {
+                if ($route->matches($uri)) {
+                    return $this->runRoute($request, $route);
+                }
             }
         }
 
@@ -137,6 +154,11 @@ class Router
         // Extract route parameters
         $parameters = $route->extractParameters($request->getPathInfo());
         
+        return $this->runRouteFromMatch($request, $route, $parameters);
+    }
+    
+    private function runRouteFromMatch(Request $request, Route $route, array $parameters): Response
+    {
         // Run middleware
         $response = $this->runMiddleware($request, $route, function ($request) use ($route, $parameters) {
             return $this->callAction($request, $route, $parameters);
@@ -264,5 +286,53 @@ class Router
     public function getRoutes(): array
     {
         return $this->routes;
+    }
+    
+    /**
+     * Enable or disable route compilation
+     */
+    public function setCompilationEnabled(bool $enabled): void
+    {
+        $this->compilationEnabled = $enabled;
+    }
+    
+    /**
+     * Get route compiler instance
+     */
+    public function getCompiler(): ?RouteCompiler
+    {
+        return $this->compiler;
+    }
+    
+    /**
+     * Get performance statistics
+     */
+    public function getPerformanceStats(): array
+    {
+        $stats = [
+            'compilation_enabled' => $this->compilationEnabled,
+            'total_routes' => 0,
+        ];
+        
+        foreach ($this->routes as $method => $routes) {
+            $stats['total_routes'] += count($routes);
+            $stats["routes_{$method}"] = count($routes);
+        }
+        
+        if ($this->compiler) {
+            $stats['compiler'] = $this->compiler->getStats();
+        }
+        
+        return $stats;
+    }
+    
+    /**
+     * Clear route compilation cache
+     */
+    public function clearCompilationCache(): void
+    {
+        if ($this->compiler) {
+            $this->compiler->clearCache();
+        }
     }
 }

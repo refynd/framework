@@ -19,6 +19,12 @@ class Container implements ContainerInterface
     protected array $bindings = [];
     protected array $instances = [];
     protected array $singletons = [];
+    
+    // Performance optimization caches
+    protected array $reflectionCache = [];
+    protected array $constructorCache = [];
+    protected array $parameterCache = [];
+    protected array $resolvedTypes = [];
 
     /**
      * Bind a type to the container
@@ -89,13 +95,23 @@ class Container implements ContainerInterface
             return $this->instances[$abstract];
         }
 
-        $concrete = $this->getConcrete($abstract);
-
-        // If concrete is a closure, execute it
-        if ($concrete instanceof Closure) {
-            $object = $concrete($this, $parameters);
+        // Use cached resolved type if available and no custom parameters
+        if (empty($parameters) && isset($this->resolvedTypes[$abstract])) {
+            $object = $this->resolvedTypes[$abstract]();
         } else {
-            $object = $this->build($concrete, $parameters);
+            $concrete = $this->getConcrete($abstract);
+
+            // If concrete is a closure, execute it
+            if ($concrete instanceof Closure) {
+                $object = $concrete($this, $parameters);
+            } else {
+                $object = $this->build($concrete, $parameters);
+            }
+            
+            // Cache the resolution for future use (only for parameter-less resolutions)
+            if (empty($parameters) && !($concrete instanceof Closure)) {
+                $this->cacheResolution($abstract, $concrete);
+            }
         }
 
         // Store as singleton if needed
@@ -132,28 +148,66 @@ class Container implements ContainerInterface
      */
     protected function build(string $concrete, array $parameters = [])
     {
+        // Check reflection cache first
+        if (!isset($this->reflectionCache[$concrete])) {
+            $this->cacheReflectionData($concrete);
+        }
+        
+        $reflectionData = $this->reflectionCache[$concrete];
+        
+        if (!$reflectionData['instantiable']) {
+            throw new RuntimeException("Class [{$concrete}] is not instantiable");
+        }
+
+        if ($reflectionData['constructor'] === null) {
+            return new $concrete;
+        }
+
+        $dependencies = $this->resolveDependencies(
+            $reflectionData['parameters'],
+            $parameters
+        );
+
+        return $reflectionData['reflector']->newInstanceArgs($dependencies);
+    }
+    
+    /**
+     * Cache reflection data for a class
+     */
+    protected function cacheReflectionData(string $concrete): void
+    {
         if (!class_exists($concrete)) {
             throw new RuntimeException("Class [{$concrete}] does not exist");
         }
 
         $reflector = new ReflectionClass($concrete);
-
-        if (!$reflector->isInstantiable()) {
-            throw new RuntimeException("Class [{$concrete}] is not instantiable");
-        }
-
         $constructor = $reflector->getConstructor();
-
-        if ($constructor === null) {
-            return new $concrete;
+        
+        $this->reflectionCache[$concrete] = [
+            'reflector' => $reflector,
+            'instantiable' => $reflector->isInstantiable(),
+            'constructor' => $constructor,
+            'parameters' => $constructor ? $constructor->getParameters() : [],
+        ];
+    }
+    
+    /**
+     * Cache resolution strategy for repeated use
+     */
+    protected function cacheResolution(string $abstract, string $concrete): void
+    {
+        if (!isset($this->reflectionCache[$concrete])) {
+            return; // Should not happen, but safety first
         }
-
-        $dependencies = $this->resolveDependencies(
-            $constructor->getParameters(),
-            $parameters
-        );
-
-        return $reflector->newInstanceArgs($dependencies);
+        
+        $reflectionData = $this->reflectionCache[$concrete];
+        
+        // Only cache simple resolutions (no constructor or simple dependencies)
+        if ($reflectionData['constructor'] === null) {
+            $this->resolvedTypes[$abstract] = fn() => new $concrete;
+        } elseif (empty($reflectionData['parameters'])) {
+            $this->resolvedTypes[$abstract] = fn() => $reflectionData['reflector']->newInstance();
+        }
     }
 
     /**
@@ -195,8 +249,14 @@ class Container implements ContainerInterface
 
         $typeName = $type instanceof \ReflectionNamedType ? $type->getName() : (string) $type;
 
+        // Cache type check for performance
+        $cacheKey = "type_check_{$typeName}";
+        if (!isset($this->parameterCache[$cacheKey])) {
+            $this->parameterCache[$cacheKey] = class_exists($typeName) || interface_exists($typeName);
+        }
+
         // If it's a class, resolve from container
-        if (class_exists($typeName) || interface_exists($typeName)) {
+        if ($this->parameterCache[$cacheKey]) {
             return $this->make($typeName);
         }
 
@@ -206,6 +266,32 @@ class Container implements ContainerInterface
         }
 
         throw new RuntimeException("Cannot resolve dependency [{$name}] of type [{$typeName}]");
+    }
+    
+    /**
+     * Clear all performance caches
+     */
+    public function clearCaches(): void
+    {
+        $this->reflectionCache = [];
+        $this->constructorCache = [];
+        $this->parameterCache = [];
+        $this->resolvedTypes = [];
+    }
+    
+    /**
+     * Get cache statistics for debugging
+     */
+    public function getCacheStats(): array
+    {
+        return [
+            'reflection_cache_size' => count($this->reflectionCache),
+            'constructor_cache_size' => count($this->constructorCache),
+            'parameter_cache_size' => count($this->parameterCache),
+            'resolved_types_size' => count($this->resolvedTypes),
+            'instances_count' => count($this->instances),
+            'bindings_count' => count($this->bindings),
+        ];
     }
 
     /**
