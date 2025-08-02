@@ -1,4 +1,4 @@
-# Refynd Framework v2.0.0 - "Enterprise Edition"
+# Refynd
 
 <p align="center">
 <img src="https://img.shields.io/badge/PHP-8.4%2B-blue" alt="PHP Version">
