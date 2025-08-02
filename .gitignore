@@ -1,45 +1,267 @@
-# Dependencies
+# =============================================================================
+# REFYND FRAMEWORK - GITIGNORE
+# =============================================================================
+# Comprehensive ignore patterns for Refynd v5.0.0 Enterprise Framework
+
+# =============================================================================
+# DEPENDENCIES & VENDOR FILES
+# =============================================================================
 /vendor/
 composer.lock
+node_modules/
+package-lock.json
+yarn.lock
 
-# IDE and Editor files
+# =============================================================================
+# IDE & EDITOR FILES
+# =============================================================================
+# VSCode
 .vscode/
+*.code-workspace
+
+# PhpStorm / IntelliJ
 .idea/
+*.iml
+*.iws
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim/Neovim
 *.swp
 *.swo
 *~
+.netrwhist
 
-# OS generated files
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# =============================================================================
+# OS GENERATED FILES
+# =============================================================================
+# macOS
 .DS_Store
 .DS_Store?
 ._*
 .Spotlight-V100
 .Trashes
-ehthumbs.db
-Thumbs.db
+.AppleDouble
+.LSOverride
 
-# Testing and Coverage
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# =============================================================================
+# TESTING & COVERAGE
+# =============================================================================
 /coverage/
 /tests/coverage/
+/build/
 .phpunit.result.cache
 .phpunit.cache/
 phpunit.xml
-/build/
+clover.xml
+infection.log
 
-# Development tools
+# =============================================================================
+# DEVELOPMENT TOOLS & CACHES
+# =============================================================================
+# PHP CS Fixer
 .php_cs.cache
 .php-cs-fixer.cache
 .php-cs-fixer.php
-.phpstan.cache
 
-# Logs and temporary files
+# PHPStan
+.phpstan.cache
+.phpstan.neon.cache
+phpstan-baseline.neon.tmp
+
+# Composer
+.composer/
+
+# Git hooks
+.git/hooks/pre-commit.local
+
+# =============================================================================
+# FRAMEWORK SPECIFIC FILES
+# =============================================================================
+# Storage directories
+/storage/app/
+/storage/cache/
+/storage/framework/cache/
+/storage/framework/sessions/
+/storage/framework/testing/
+/storage/framework/views/
+/storage/logs/
+/storage/debugbar/
+
+# Configuration
+.env
+.env.local
+.env.production
+.env.backup
+config.local.php
+
+# Prism template cache
+/storage/prism/compiled/
+*.prism.cache
+
+# API documentation cache
+/docs/api/cache/
+/docs/build/
+
+# Plugin development
+/plugins/*/cache/
+/plugins/*/logs/
+
+# Mail queue storage
+/storage/mail/queue/
+/storage/mail/sent/
+/storage/mail/failed/
+
+# WebSocket server files
+websocket.pid
+websocket.log
+
+# =============================================================================
+# LOGS & TEMPORARY FILES
+# =============================================================================
 *.log
 *.tmp
 *.temp
+*.pid
+*.lock
+*.out
+*.err
 
-# Framework development files
-/docs/build/
+# Framework logs
+refynd.log
+error.log
+access.log
+query.log
+performance.log
 
+# =============================================================================
+# SECURITY & SENSITIVE FILES
+# =============================================================================
+# Certificates and keys
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+id_rsa*
+id_dsa*
+id_ecdsa*
+id_ed25519*
+
+# Database files
+*.sqlite
+*.sqlite3
+*.db
+
+# Backup files
+*.backup
+*.bak
+*.sql.gz
+
+# =============================================================================
+# BUILD ARTIFACTS & GENERATED FILES
+# =============================================================================
+/dist/
+/public/build/
+/public/hot
+/public/storage
+mix-manifest.json
+webpack-stats.json
+
+# Documentation builds
+/docs/html/
+/docs/latex/
+/docs/dist/
+
+# =============================================================================
+# DEPLOYMENT & SETUP
+# =============================================================================
 # Setup and deployment scripts
 setup-*.sh
 deploy-*.sh
+install-*.sh
+
+# Docker
+.dockerignore.local
+docker-compose.override.yml
+
+# Vagrant
+.vagrant/
+.vagrant.d/
+
+# =============================================================================
+# SAGE AI ASSISTANT (Future Development)
+# =============================================================================
+# Sage extension development files
+/sage-extension/node_modules/
+/sage-extension/out/
+/sage-extension/.vscode-test/
+/sage-extension/coverage/
+
+# AI training data and models
+/ai-models/
+/training-data/
+*.model
+*.weights
+
+# =============================================================================
+# MISC DEVELOPMENT FILES
+# =============================================================================
+# Debugging
+xdebug.log
+debug.log
+
+# Profiling
+*.prof
+*.cachegrind
+*.callgrind
+
+# Temporary editor files
+.*.sw[po]
+.#*
+*#
+
+# Archive files in development
+*.zip
+*.tar
+*.tar.gz
+*.rar
+*.7z
+
+# Local development overrides
+local.*
+*.local
