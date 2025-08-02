@@ -32,7 +32,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Performance Caching**: Enhanced Container reflection caching for improved dependency injection performance
 - **Type Safety**: Complete framework-wide type safety without breaking backward compatibility
 
-## [2.1.0] - 2024-12-19
+## [2.1.0] - 2025-8-1
 
 ### Added
 - **WebSocket Support**: Complete WebSocket server and client implementation with real-time communication capabilities
