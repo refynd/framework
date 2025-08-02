@@ -40,6 +40,8 @@ For the best development experience, install the Refynd CLI tool globally:
 composer global require refynd/cli
 ```
 
+> **Requirements:** Refynd CLI requires Refynd Framework ^2.0 for full compatibility with the latest features.
+
 The CLI provides powerful commands for:
 - **Project creation**: `refynd new my-app`
 - **Code generation**: `refynd make:controller UserController`
