@@ -64,19 +64,62 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Testing**: Comprehensive test coverage for new components
 - **Static Analysis**: Level 6 PHPStan compliance across all new code
 
-## [2.0.0] - 2024-12-19
+## [2.0.0] - 2025-08-01
 
-### Added
-- Initial framework architecture with modern PHP 8.4+ features
-- Core container and dependency injection system
-- Database ORM with relationships and migrations
-- HTTP routing and middleware system
-- Authentication and authorization
-- Caching system with multiple drivers
-- Event system for decoupled components
-- Validation system for data integrity
-- Bootstrap engine for application initialization
-- Console kernel for command-line operations
+### 🚀 Major Features Added
+
+#### Enhanced Prism Template Engine
+- **Template Inheritance System**: Full support for `@extends`, `@section`, and `@yield` directives
+- **Component System**: Reusable template components with `@component` and `@endcomponent`
+- **Advanced Directives**: 20+ custom directives including:
+  - Control structures: `@if`, `@else`, `@elseif`, `@endif`, `@foreach`, `@endforeach`, `@while`, `@endwhile`
+  - Conditional logic: `@switch`, `@case`, `@default`, `@endswitch`
+  - Authentication: `@auth`, `@guest`, `@endauth`, `@endguest`
+  - Security: `@csrf`, `@method`
+  - Utilities: `@include`, `@php`, `@endphp`, `@json`, `@dump`, `@dd`
+- **Built-in Filters**: 15+ filters for data transformation:
+  - Text: `upper`, `lower`, `title`, `capitalize`, `truncate`
+  - Data: `length`, `reverse`, `sort`, `json`, `date`, `default`
+  - Formatting: `currency`, `number`, `slug`, `nl2br`
+- **XSS Protection**: Automatic output escaping with `{{{ }}}` for raw output
+- **Performance Tracking**: Debug mode with template compilation and render timing
+- **Global Variables**: Framework-wide template variables and helpers
+
+#### Complete Authentication System
+- **Session-Based Authentication**: Secure user session management
+- **Guard System**: Flexible authentication guards with `StatefulGuardInterface`
+- **User Providers**: Database-backed user authentication with `DatabaseUserProvider`
+- **Password Hashing**: Support for both Bcrypt and Argon2 algorithms
+- **Authentication Middleware**: Route protection with `AuthMiddleware` and `GuestMiddleware`
+- **AuthManager**: Centralized authentication management and configuration
+- **Authenticatable Interface**: Standardized user model contracts
+
+#### Hash Management System
+- **Multiple Algorithms**: Support for Bcrypt and Argon2 password hashing
+- **Configurable Options**: Customizable cost parameters and algorithm selection
+- **Secure Verification**: Constant-time password verification
+- **HashManager**: Centralized hash driver management
+
+#### Enhanced Framework Integration
+- **AuthModule**: Complete authentication service registration
+- **Enhanced PrismModule**: Template engine with authentication integration
+- **Container Integration**: All services properly registered in dependency injection container
+- **Middleware Stack**: Authentication middleware integrated into HTTP kernel
+
+### Improved
+- **Performance Enhancements**: Container resolution, route compilation, cache integration, bootstrap optimization
+- **Code Quality**: Type safety, static analysis compliance, comprehensive test coverage
+- **Documentation**: Extensive inline documentation and examples
+
+### Technical Details
+- **Core Foundation**: Container and dependency injection system
+- **Database ORM**: Relationships, collections, and migrations
+- **HTTP Routing**: Advanced route matching and middleware system
+- **Caching System**: Multiple drivers (Redis, Memcached, file, array)
+- **Event System**: Decoupled component communication
+- **Validation System**: Data integrity and validation rules
+- **Bootstrap Engine**: Application lifecycle management
+- **Console Kernel**: Command-line operations
 
 ### Framework Foundation
 - PSR-4 autoloading and modern PHP practices
