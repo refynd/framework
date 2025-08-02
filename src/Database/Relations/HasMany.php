@@ -74,7 +74,7 @@ class HasMany extends Relation
             }
         }
 
-        return $models;
+        return (array) $models;
     }
 
     /**
@@ -118,7 +118,7 @@ class HasMany extends Relation
 
     /**
      * Create multiple related models
-     * @return Collection<int, Model>
+     * @return Collection < int, Model>
      */
     public function createMany(array $records): Collection
     {

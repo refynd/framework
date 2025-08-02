@@ -74,7 +74,7 @@ class HasOne extends Relation
             }
         }
 
-        return $models;
+        return (array) $models;
     }
 
     /**

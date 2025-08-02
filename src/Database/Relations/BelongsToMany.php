@@ -88,7 +88,7 @@ class BelongsToMany extends Relation
             }
         }
 
-        return $models;
+        return (array) $models;
     }
 
     /**
@@ -119,10 +119,8 @@ class BelongsToMany extends Relation
                 continue; // Skip null IDs
             }
 
-            $pivotData = array_merge([
-                $this->foreignPivotKey => $parentKey,
-                $this->relatedPivotKey => $id,
-            ], $attributes);
+            $pivotData = array_merge([$this->foreignPivotKey => $parentKey,
+                $this->relatedPivotKey => $id,], $attributes);
 
             $this->insertPivot($pivotData);
         }
@@ -195,11 +193,9 @@ class BelongsToMany extends Relation
             $this->attach($toAttach);
         }
 
-        return [
-            'attached' => $toAttach,
+        return ['attached' => $toAttach,
             'detached' => $toDetach,
-            'updated' => [],
-        ];
+            'updated' => [],];
     }
 
     /**

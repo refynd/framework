@@ -74,7 +74,7 @@ class BelongsTo extends Relation
             }
         }
 
-        return $models;
+        return (array) $models;
     }
 
     /**

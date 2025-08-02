@@ -17,6 +17,7 @@ yarn.lock
 # =============================================================================
 # VSCode
 .vscode/
+!.vscode/settings.json
 *.code-workspace
 
 # PhpStorm / IntelliJ
@@ -222,6 +223,7 @@ webpack-stats.json
 setup-*.sh
 deploy-*.sh
 install-*.sh
+cleanup.sh
 
 # Docker
 .dockerignore.local
@@ -230,21 +232,6 @@ docker-compose.override.yml
 # Vagrant
 .vagrant/
 .vagrant.d/
-
-# =============================================================================
-# SAGE AI ASSISTANT (Future Development)
-# =============================================================================
-# Sage extension development files
-/sage-extension/node_modules/
-/sage-extension/out/
-/sage-extension/.vscode-test/
-/sage-extension/coverage/
-
-# AI training data and models
-/ai-models/
-/training-data/
-*.model
-*.weights
 
 # =============================================================================
 # MISC DEVELOPMENT FILES

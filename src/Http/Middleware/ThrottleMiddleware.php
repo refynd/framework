@@ -53,16 +53,14 @@ class ThrottleMiddleware
     protected function getClientIp(object $request): string
     {
         // Try to get real IP from common proxy headers
-        $headers = [
-            'HTTP_CF_CONNECTING_IP',     // Cloudflare
+        $headers = ['HTTP_CF_CONNECTING_IP',     // Cloudflare
             'HTTP_CLIENT_IP',            // Proxy
             'HTTP_X_FORWARDED_FOR',      // Load balancer/proxy
             'HTTP_X_FORWARDED',          // Proxy
             'HTTP_X_CLUSTER_CLIENT_IP',  // Cluster
             'HTTP_FORWARDED_FOR',        // Proxy
             'HTTP_FORWARDED',            // Proxy
-            'REMOTE_ADDR'                // Standard
-        ];
+            'REMOTE_ADDR'                // Standard];
 
         foreach ($headers as $header) {
             if (!empty($_SERVER[$header])) {
@@ -110,21 +108,15 @@ class ThrottleMiddleware
     {
         $limitInfo = $e->getLimitInfo();
 
-        return [
-            'status' => 429,
-            'headers' => [
-                'Retry-After' => $e->getRetryAfter(),
+        return ['status' => 429,
+            'headers' => ['Retry-After' => $e->getRetryAfter(),
                 'X-RateLimit-Limit' => $limitInfo['max_attempts'],
                 'X-RateLimit-Remaining' => 0,
-                'X-RateLimit-Reset' => $limitInfo['reset_time'],
-            ],
-            'body' => [
-                'error' => 'Too Many Attempts',
+                'X-RateLimit-Reset' => $limitInfo['reset_time'],],
+            'body' => ['error' => 'Too Many Attempts',
                 'message' => $e->getMessage(),
                 'retry_after' => $e->getRetryAfter(),
-                'limit_info' => $limitInfo,
-            ]
-        ];
+                'limit_info' => $limitInfo,]];
     }
 
     /**
