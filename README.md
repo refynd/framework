@@ -13,7 +13,6 @@
 Refynd is a **modern PHP framework** that combines **enterprise-grade power** with **elegant simplicity**. Built for developers who refuse to compromise between functionality and beauty, Refynd provides everything you need to craft exceptional web applications with **advanced templating**, **complete authentication**, and **blazing performance**.
 
 **🎉 NEW in v2.1.0**: WebSocket support, Queue system, Storage abstraction, and comprehensive Rate limiting!
-**✨ Enhanced in v2.0.0**: Enterprise-grade Prism template engine with inheritance, complete authentication system, and advanced features!
 
 **GitHub Repository**: https://github.com/refynd/framework
 
