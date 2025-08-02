@@ -3,7 +3,7 @@
 namespace Refynd\Console\Commands;
 
 use Refynd\WebSocket\WebSocketServer;
-use Refynd\WebSocket\RateLimiter;
+use Refynd\RateLimiter\WebSocketRateLimiter;
 use Refynd\Container\Container;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -44,7 +44,7 @@ class WebSocketServerCommand extends Command
             $timeWindow = (int) $input->getOption('time-window');
             $blockDuration = (int) $input->getOption('block-duration');
             
-            $rateLimiter = new RateLimiter($maxRequests, $timeWindow, $blockDuration);
+            $rateLimiter = new WebSocketRateLimiter(null, $maxRequests, $timeWindow);
             
             $output->writeln("<info>Rate limiting enabled:</info>");
             $output->writeln("  - Max requests: {$maxRequests} per {$timeWindow} seconds");

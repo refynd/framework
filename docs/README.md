@@ -9,7 +9,8 @@ Welcome to the comprehensive documentation for Refynd.
 - **[What You Can Build](WHAT_YOU_CAN_BUILD.md)** - Detailed examples and application patterns
 
 ### Feature Guides
-- **[WebSocket Rate Limiting](WEBSOCKET_RATE_LIMITING.md)** - Comprehensive guide to WebSocket rate limiting and abuse prevention
+- **[Rate Limiting](RATE_LIMITING.md)** - Comprehensive framework-wide rate limiting system
+- **[WebSocket Rate Limiting](WEBSOCKET_RATE_LIMITING.md)** - WebSocket-specific rate limiting implementation
 
 ### Development Resources
 - **[Contributing Guide](../CONTRIBUTING.md)** - Guidelines for contributing to Refynd

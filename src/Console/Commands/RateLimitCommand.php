@@ -2,7 +2,8 @@
 
 namespace Refynd\Console\Commands;
 
-use Refynd\WebSocket\RateLimiter;
+use Refynd\RateLimiter\RateLimiter;
+use Refynd\RateLimiter\WebSocketRateLimiter;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -12,83 +13,116 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class RateLimitCommand extends Command
 {
-    protected static $defaultName = 'websocket:rate-limit';
-    protected static $defaultDescription = 'Manage WebSocket rate limiting';
+    protected static $defaultName = 'rate-limit';
+    protected static $defaultDescription = 'Manage framework rate limiting';
 
     protected function configure(): void
     {
         $this
-            ->setDescription('Manage WebSocket rate limiting')
-            ->addArgument('action', InputArgument::REQUIRED, 'Action to perform (stats, reset, config)')
-            ->addOption('client', 'c', InputOption::VALUE_OPTIONAL, 'Specific client to target')
+            ->setDescription('Manage framework rate limiting')
+            ->addArgument('component', InputArgument::REQUIRED, 'Component to manage (websocket, http, api)')
+            ->addArgument('action', InputArgument::REQUIRED, 'Action to perform (stats, reset, test)')
+            ->addOption('key', 'k', InputOption::VALUE_OPTIONAL, 'Specific key to target')
             ->addOption('max-requests', 'r', InputOption::VALUE_OPTIONAL, 'Maximum requests per time window', 60)
             ->addOption('time-window', 't', InputOption::VALUE_OPTIONAL, 'Time window in seconds', 60)
-            ->addOption('block-duration', 'b', InputOption::VALUE_OPTIONAL, 'Block duration in seconds', 300)
-            ->setHelp('This command allows you to manage WebSocket rate limiting settings and view statistics.');
+            ->setHelp('This command allows you to manage rate limiting for different framework components.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
+        $component = $input->getArgument('component');
         $action = $input->getArgument('action');
+
+        $rateLimiter = $this->getRateLimiter($component);
+        
+        if (!$rateLimiter) {
+            $io->error("Unknown component: {$component}. Available: websocket, http, api");
+            return Command::FAILURE;
+        }
 
         switch ($action) {
             case 'stats':
-                return $this->showStats($io);
+                return $this->showStats($io, $component, $rateLimiter);
             
             case 'reset':
-                return $this->resetRateLimit($io, $input->getOption('client'));
-            
-            case 'config':
-                return $this->showConfig($io, $input);
+                return $this->resetRateLimit($io, $component, $rateLimiter, $input->getOption('key'));
             
             case 'test':
-                return $this->testRateLimit($io, $input);
+                return $this->testRateLimit($io, $component, $rateLimiter, $input);
             
             default:
-                $io->error("Unknown action: {$action}");
+                $io->error("Unknown action: {$action}. Available: stats, reset, test");
                 return Command::FAILURE;
         }
     }
 
-    private function showStats(SymfonyStyle $io): int
+    private function getRateLimiter(string $component)
     {
-        $rateLimiter = new RateLimiter();
-        $stats = $rateLimiter->getStats();
+        switch ($component) {
+            case 'websocket':
+                return new WebSocketRateLimiter();
+            case 'http':
+                return RateLimiter::for('http');
+            case 'api':
+                return RateLimiter::for('api');
+            default:
+                return null;
+        }
+    }
 
-        $io->title('WebSocket Rate Limiter Statistics');
+    private function showStats(SymfonyStyle $io, string $component, $rateLimiter): int
+    {
+        $io->title("Rate Limiter Statistics - {$component}");
         
-        $io->table(
-            ['Metric', 'Value'],
-            [
-                ['Total Clients', $stats['total_clients']],
-                ['Active Clients', $stats['active_clients']],
-                ['Blocked Clients', $stats['blocked_clients']],
-                ['Max Requests', $stats['max_requests']],
-                ['Time Window', $stats['time_window'] . ' seconds'],
-                ['Block Duration', $stats['block_duration'] . ' seconds']
-            ]
-        );
-
-        if ($stats['blocked_clients'] > 0) {
-            $io->warning("There are {$stats['blocked_clients']} blocked clients");
+        if ($component === 'websocket' && $rateLimiter instanceof WebSocketRateLimiter) {
+            $stats = $rateLimiter->getServerStats();
+            
+            $io->table(
+                ['Metric', 'Value'],
+                [
+                    ['Component', $component],
+                    ['Max Requests', $stats['max_requests']],
+                    ['Time Window', $stats['time_window'] . ' seconds'],
+                    ['Type', $stats['type']],
+                ]
+            );
         } else {
-            $io->success('No clients are currently blocked');
+            $stats = $rateLimiter->getStatistics();
+            
+            $io->table(
+                ['Metric', 'Value'],
+                [
+                    ['Component', $component],
+                    ['Cache Driver', $stats['cache_driver']],
+                    ['Key Prefix', $stats['key_prefix']],
+                    ['Current Time', date('Y-m-d H:i:s', $stats['current_time'])],
+                ]
+            );
         }
 
+        $io->success('Statistics retrieved successfully');
         return Command::SUCCESS;
     }
 
-    private function resetRateLimit(SymfonyStyle $io, ?string $client): int
+    private function resetRateLimit(SymfonyStyle $io, string $component, $rateLimiter, ?string $key): int
     {
-        $rateLimiter = new RateLimiter();
-        
-        if ($client) {
-            $rateLimiter->reset($client);
-            $io->success("Rate limit reset for client: {$client}");
+        if ($component === 'websocket' && $rateLimiter instanceof WebSocketRateLimiter) {
+            if ($key) {
+                $rateLimiter->resetClient($key);
+                $io->success("Rate limit reset for WebSocket client: {$key}");
+            } else {
+                $io->warning('WebSocket rate limiter requires a specific client key');
+                return Command::FAILURE;
+            }
         } else {
-            $rateLimiter->reset();
-            $io->success('Rate limit reset for all clients');
+            if ($key) {
+                $rateLimiter->clear($key);
+                $io->success("Rate limit reset for key: {$key}");
+            } else {
+                $io->warning('Framework rate limiter requires a specific key');
+                return Command::FAILURE;
+            }
         }
 
         return Command::SUCCESS;
@@ -121,23 +155,31 @@ class RateLimitCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function testRateLimit(SymfonyStyle $io, InputInterface $input): int
+    private function testRateLimit(SymfonyStyle $io, string $component, $rateLimiter, InputInterface $input): int
     {
         $maxRequests = (int) $input->getOption('max-requests');
         $timeWindow = (int) $input->getOption('time-window');
-        $blockDuration = (int) $input->getOption('block-duration');
 
-        $rateLimiter = new RateLimiter($maxRequests, $timeWindow, $blockDuration);
+        $io->title("Rate Limiter Test - {$component}");
+        
+        if ($component === 'websocket' && $rateLimiter instanceof WebSocketRateLimiter) {
+            return $this->testWebSocketRateLimit($io, $rateLimiter, $maxRequests, $timeWindow);
+        } else {
+            return $this->testGenericRateLimit($io, $rateLimiter, $maxRequests, $timeWindow);
+        }
+    }
+
+    private function testWebSocketRateLimit(SymfonyStyle $io, WebSocketRateLimiter $rateLimiter, int $maxRequests, int $timeWindow): int
+    {
         $testClient = 'test-client-' . uniqid();
-
-        $io->title('Rate Limiter Test');
-        $io->note("Testing with client: {$testClient}");
+        $io->note("Testing WebSocket rate limiter with client: {$testClient}");
 
         $allowed = 0;
         $blocked = 0;
 
         for ($i = 1; $i <= $maxRequests + 10; $i++) {
             if ($rateLimiter->isAllowed($testClient)) {
+                $rateLimiter->hit($testClient, $timeWindow); // Manually hit since isAllowed doesn't increment
                 $allowed++;
                 $io->writeln("<info>[{$i}]</info> Request allowed (Total allowed: {$allowed})");
             } else {
@@ -149,11 +191,39 @@ class RateLimitCommand extends Command
             }
         }
 
-        $io->success("Test completed: {$allowed} allowed, {$blocked} blocked");
+        $io->success("WebSocket test completed: {$allowed} allowed, {$blocked} blocked");
         
         // Cleanup test client
-        $rateLimiter->reset($testClient);
+        $rateLimiter->resetClient($testClient);
+        return Command::SUCCESS;
+    }
 
+    private function testGenericRateLimit(SymfonyStyle $io, RateLimiter $rateLimiter, int $maxRequests, int $timeWindow): int
+    {
+        $testKey = 'test-key-' . uniqid();
+        $io->note("Testing generic rate limiter with key: {$testKey}");
+
+        $allowed = 0;
+        $blocked = 0;
+
+        for ($i = 1; $i <= $maxRequests + 10; $i++) {
+            if (!$rateLimiter->tooManyAttempts($testKey, $maxRequests)) {
+                $rateLimiter->hit($testKey, $timeWindow);
+                $allowed++;
+                $remaining = $rateLimiter->retriesLeft($testKey, $maxRequests);
+                $io->writeln("<info>[{$i}]</info> Request allowed (Total allowed: {$allowed}, Remaining: {$remaining})");
+            } else {
+                $blocked++;
+                $availableIn = $rateLimiter->availableIn($testKey);
+                
+                $io->writeln("<error>[{$i}]</error> Request blocked (Total blocked: {$blocked}, Available in: {$availableIn}s)");
+            }
+        }
+
+        $io->success("Generic test completed: {$allowed} allowed, {$blocked} blocked");
+        
+        // Cleanup test key
+        $rateLimiter->clear($testKey);
         return Command::SUCCESS;
     }
 }

@@ -2,6 +2,9 @@
 
 namespace Refynd\WebSocket;
 
+use Refynd\RateLimiter\WebSocketRateLimiter;
+use Refynd\RateLimiter\RateLimitExceededException;
+
 class WebSocketServer
 {
     private mixed $socket;
@@ -10,13 +13,13 @@ class WebSocketServer
     private string $host;
     private int $port;
     private bool $running = true;
-    private RateLimiter $rateLimiter;
+    private WebSocketRateLimiter $rateLimiter;
 
-    public function __construct(string $host = '127.0.0.1', int $port = 8080, ?RateLimiter $rateLimiter = null)
+    public function __construct(string $host = '127.0.0.1', int $port = 8080, ?WebSocketRateLimiter $rateLimiter = null)
     {
         $this->host = $host;
         $this->port = $port;
-        $this->rateLimiter = $rateLimiter ?? new RateLimiter();
+        $this->rateLimiter = $rateLimiter ?? new WebSocketRateLimiter();
     }
 
     public function start(): void
@@ -54,8 +57,10 @@ class WebSocketServer
                     }
 
                     // Check rate limit before processing message
-                    if (!$this->rateLimiter->isAllowed($client)) {
-                        $this->sendRateLimitError($client);
+                    try {
+                        $this->rateLimiter->checkClient($client);
+                    } catch (RateLimitExceededException $e) {
+                        $this->sendRateLimitError($client, $e);
                         continue;
                     }
 
@@ -66,12 +71,11 @@ class WebSocketServer
                 }
             }
             
-            // Cleanup rate limiter periodically
-            static $lastCleanup = 0;
-            if (time() - $lastCleanup > 300) { // Every 5 minutes
-                $this->rateLimiter->cleanup();
-                $lastCleanup = time();
-            }
+            // Cleanup rate limiter periodically - removed as it's handled automatically
+            // static $lastCleanup = 0;
+            // if (time() - $lastCleanup > 300) {
+            //     $lastCleanup = time();
+            // }
         }
     }
 
@@ -97,29 +101,37 @@ class WebSocketServer
         @socket_write($client, $encodedMessage, strlen($encodedMessage));
     }
 
-    public function sendRateLimitError($client): void
+    public function sendRateLimitError($client, ?RateLimitExceededException $exception = null): void
     {
         $remainingRequests = $this->rateLimiter->getRemainingRequests($client);
         $blockedUntil = $this->rateLimiter->getBlockedUntil($client);
         
         $error = [
             'type' => 'rate_limit_error',
-            'message' => 'Rate limit exceeded',
+            'message' => $exception ? $exception->getMessage() : 'Rate limit exceeded',
             'remaining_requests' => $remainingRequests,
             'blocked_until' => $blockedUntil > 0 ? date('c', $blockedUntil) : null
         ];
+        
+        if ($exception) {
+            $error['limit_info'] = $exception->getLimitInfo();
+        }
         
         $this->sendToClient($client, json_encode($error));
     }
 
     public function getRateLimiterStats(): array
     {
-        return $this->rateLimiter->getStats();
+        return $this->rateLimiter->getServerStats();
     }
 
     public function resetRateLimit($client = null): void
     {
-        $this->rateLimiter->reset($client);
+        if ($client) {
+            $this->rateLimiter->resetClient($client);
+        }
+        // Note: WebSocketRateLimiter doesn't support resetting all clients
+        // This would need to be implemented if required
     }
 
     public function joinChannel($client, string $channel): void
@@ -190,7 +202,7 @@ class WebSocketServer
                 'connected_clients' => count($this->clients),
                 'channels' => count($this->channels)
             ],
-            'rate_limiter' => $this->rateLimiter->getStats()
+            'rate_limiter' => $this->rateLimiter->getServerStats()
         ];
         
         $this->sendToClient($client, json_encode($stats));
@@ -271,7 +283,7 @@ class WebSocketServer
         $client = $this->clients[$key];
         
         // Clean up rate limiter data for this client
-        $this->rateLimiter->reset($client);
+        $this->rateLimiter->resetClient($client);
         
         socket_close($client);
         unset($this->clients[$key]);
