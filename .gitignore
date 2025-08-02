@@ -90,6 +90,14 @@ phpunit.xml
 clover.xml
 infection.log
 
+# Analysis and reports
+*analysis*
+*-analysis*
+analysis-*
+*report*.xml
+*report*.html
+ANALYSIS_REPORT.md
+
 # =============================================================================
 # DEVELOPMENT TOOLS & CACHES
 # =============================================================================
