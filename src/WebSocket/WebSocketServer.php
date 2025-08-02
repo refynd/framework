@@ -95,13 +95,13 @@ class WebSocketServer
         }
     }
 
-    public function sendToClient($client, string $message): void
+    public function sendToClient(mixed $client, string $message): void
     {
         $encodedMessage = $this->encode($message);
         @socket_write($client, $encodedMessage, strlen($encodedMessage));
     }
 
-    public function sendRateLimitError($client, ?RateLimitExceededException $exception = null): void
+    public function sendRateLimitError(mixed $client, ?RateLimitExceededException $exception = null): void
     {
         $remainingRequests = $this->rateLimiter->getRemainingRequests($client);
         $blockedUntil = $this->rateLimiter->getBlockedUntil($client);
@@ -125,7 +125,7 @@ class WebSocketServer
         return $this->rateLimiter->getServerStats();
     }
 
-    public function resetRateLimit($client = null): void
+    public function resetRateLimit(mixed $client = null): void
     {
         if ($client) {
             $this->rateLimiter->resetClient($client);
@@ -134,7 +134,7 @@ class WebSocketServer
         // This would need to be implemented if required
     }
 
-    public function joinChannel($client, string $channel): void
+    public function joinChannel(mixed $client, string $channel): void
     {
         if (!isset($this->channels[$channel])) {
             $this->channels[$channel] = [];
@@ -146,7 +146,7 @@ class WebSocketServer
         }
     }
 
-    public function leaveChannel($client, string $channel): void
+    public function leaveChannel(mixed $client, string $channel): void
     {
         if (!isset($this->channels[$channel])) {
             return;
@@ -160,7 +160,7 @@ class WebSocketServer
         }
     }
 
-    private function handleMessage($client, array $message): void
+    private function handleMessage(mixed $client, array $message): void
     {
         switch ($message['type'] ?? '') {
             case 'join':
@@ -180,7 +180,7 @@ class WebSocketServer
         }
     }
 
-    private function sendStatusResponse($client, string $action, string $channel): void
+    private function sendStatusResponse(mixed $client, string $action, string $channel): void
     {
         $response = [
             'type' => 'status',
@@ -194,7 +194,7 @@ class WebSocketServer
         $this->sendToClient($client, json_encode($response));
     }
 
-    private function sendStatsResponse($client): void
+    private function sendStatsResponse(mixed $client): void
     {
         $stats = [
             'type' => 'stats',
@@ -208,7 +208,7 @@ class WebSocketServer
         $this->sendToClient($client, json_encode($stats));
     }
 
-    private function isClientInChannel($client, string $channel): bool
+    private function isClientInChannel(mixed $client, string $channel): bool
     {
         if (!isset($this->channels[$channel])) {
             return false;
@@ -218,7 +218,7 @@ class WebSocketServer
         return in_array($clientId, $this->channels[$channel]);
     }
 
-    private function performHandshake($client): void
+    private function performHandshake(mixed $client): void
     {
         $request = socket_read($client, 5000);
         preg_match('#Sec-WebSocket-Key: (.*)\r\n#', $request, $matches);

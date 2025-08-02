@@ -115,7 +115,7 @@ class RateLimiter implements RateLimiterInterface
     /**
      * Attempt to execute a callback with rate limiting.
      */
-    public function attempt(string $key, int $maxAttempts, callable $callback, int $decaySeconds = 60)
+    public function attempt(string $key, int $maxAttempts, callable $callback, int $decaySeconds = 60): mixed
     {
         if ($this->tooManyAttempts($key, $maxAttempts)) {
             $limitInfo = $this->getLimitInfo($key, $maxAttempts, $decaySeconds);
@@ -133,7 +133,7 @@ class RateLimiter implements RateLimiterInterface
     /**
      * Execute a callback with rate limiting, returning null if rate limited.
      */
-    public function attemptOrNull(string $key, int $maxAttempts, callable $callback, int $decaySeconds = 60)
+    public function attemptOrNull(string $key, int $maxAttempts, callable $callback, int $decaySeconds = 60): mixed
     {
         try {
             return $this->attempt($key, $maxAttempts, $callback, $decaySeconds);

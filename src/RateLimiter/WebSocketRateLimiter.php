@@ -16,13 +16,13 @@ class WebSocketRateLimiter extends RateLimiter
         $this->decaySeconds = $decaySeconds;
     }
 
-    public function isAllowed($client): bool
+    public function isAllowed(mixed $client): bool
     {
         $key = $this->getClientKey($client);
         return !$this->tooManyAttempts($key, $this->maxRequests);
     }
 
-    public function checkClient($client): void
+    public function checkClient(mixed $client): void
     {
         $key = $this->getClientKey($client);
         
@@ -38,26 +38,26 @@ class WebSocketRateLimiter extends RateLimiter
         $this->hit($key, $this->decaySeconds);
     }
 
-    public function getRemainingRequests($client): int
+    public function getRemainingRequests(mixed $client): int
     {
         $key = $this->getClientKey($client);
         return $this->retriesLeft($key, $this->maxRequests);
     }
 
-    public function getBlockedUntil($client): int
+    public function getBlockedUntil(mixed $client): int
     {
         $key = $this->getClientKey($client);
         $availableIn = $this->availableIn($key);
         return $availableIn > 0 ? time() + $availableIn : 0;
     }
 
-    public function resetClient($client): void
+    public function resetClient(mixed $client): void
     {
         $key = $this->getClientKey($client);
         $this->clear($key);
     }
 
-    public function getClientStats($client): array
+    public function getClientStats(mixed $client): array
     {
         $key = $this->getClientKey($client);
         return $this->getLimitInfo($key, $this->maxRequests, $this->decaySeconds);
@@ -72,7 +72,7 @@ class WebSocketRateLimiter extends RateLimiter
         ];
     }
 
-    private function getClientKey($client): string
+    private function getClientKey(mixed $client): string
     {
         if (is_resource($client) || $client instanceof \Socket) {
             $address = '';

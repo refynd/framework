@@ -69,7 +69,7 @@ class HashManager implements HashInterface
     /**
      * Get a driver instance
      */
-    public function driver(string $driver = null): HashInterface
+    public function driver(?string $driver = null): HashInterface
     {
         $driver = $driver ?: $this->defaultDriver;
 

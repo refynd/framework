@@ -12,7 +12,8 @@
 
 Refynd is a **modern PHP framework** that combines **enterprise-grade power** with **elegant simplicity**. Built for developers who refuse to compromise between functionality and beauty, Refynd provides everything you need to craft exceptional web applications with **advanced templating**, **complete authentication**, and **blazing performance**.
 
-**🎉 NEW in v2.0.0**: Enhanced Prism template engine with inheritance, complete authentication system, and enterprise features!
+**🎉 NEW in v2.1.0**: WebSocket support, Queue system, Storage abstraction, and comprehensive Rate limiting!
+**✨ Enhanced in v2.0.0**: Enterprise-grade Prism template engine with inheritance, complete authentication system, and advanced features!
 
 **GitHub Repository**: https://github.com/refynd/framework
 
@@ -51,6 +52,31 @@ The CLI provides powerful commands for:
 > **Note:** This is the core package. To create new applications, use the [Refynd application skeleton](https://github.com/refynd/refynd).
 
 ## 🎯 Enterprise Features
+
+### 🌐 **Real-time WebSocket Support** (NEW in v2.1.0)
+- **WebSocket Server** - High-performance socket server with connection management
+- **Channel Broadcasting** - Organize real-time communications with channels
+- **Rate Limiting Integration** - Protect WebSocket connections from abuse
+- **Console Commands** - Easy server management with `websocket:serve`
+
+### 🚀 **Background Queue System** (NEW in v2.1.0)
+- **Database Queue Driver** - Persistent job storage with retry mechanisms
+- **Job Processing** - Queue jobs for asynchronous background processing
+- **Worker Management** - Robust queue workers with graceful shutdown
+- **Console Commands** - Manage queues with `queue:work` and `queue:listen`
+
+### 📁 **Multi-driver Storage System** (NEW in v2.1.0)
+- **Local Storage** - File operations with local disk driver
+- **Cloud-ready Interface** - Extensible design for S3, Google Cloud, and more
+- **File Operations** - Complete CRUD operations (put, get, delete, exists, size)
+- **Storage Module** - Integrated into the framework's module system
+
+### ⚡ **Comprehensive Rate Limiting** (NEW in v2.1.0)
+- **Framework-wide Protection** - Rate limiting for HTTP, API, and WebSocket traffic
+- **Multiple Strategies** - Per-user, per-IP, and custom rate limiting rules
+- **Cache-backed** - High-performance with Redis/Memcached support
+- **Rate Limit Middleware** - Easy integration with `ThrottleMiddleware`
+- **Management Commands** - Monitor and reset limits via console
 
 ### 🔥 **Enhanced Prism Template Engine**
 - **Template Inheritance** - Build complex layouts with `@extends`, `@section`, `@yield`
@@ -374,29 +400,107 @@ class WelcomeHandler
 Event::fire(new UserRegistered($user));
 ```
 
+### Real-time WebSocket Communication
+
+```php
+use Refynd\WebSocket\WebSocketServer;
+
+// Start WebSocket server
+$server = new WebSocketServer('127.0.0.1', 8080);
+$server->start();
+
+// Or via console command
+// php refynd websocket:serve --host=127.0.0.1 --port=8080
+```
+
+### Background Queue Processing
+
+```php
+use Refynd\Queue\QueuedJob;
+
+// Queue a job for background processing
+class SendEmailJob implements JobInterface
+{
+    public function handle(): void {
+        // Send email logic
+    }
+}
+
+$queue = $container->make(QueueInterface::class);
+$queue->push(new QueuedJob(SendEmailJob::class, $jobData));
+
+// Start queue worker
+// php refynd queue:work
+```
+
+### File Storage Operations
+
+```php
+use Refynd\Storage\StorageManager;
+
+$storage = $container->make(StorageManager::class);
+
+// Store a file
+$storage->put('uploads/photo.jpg', $fileContents);
+
+// Retrieve a file
+$contents = $storage->get('uploads/photo.jpg');
+
+// Check if file exists
+if ($storage->exists('uploads/photo.jpg')) {
+    $size = $storage->size('uploads/photo.jpg');
+}
+```
+
+### Rate Limiting Protection
+
+```php
+use Refynd\RateLimiter\RateLimiter;
+
+// Apply rate limiting
+$rateLimiter = $container->make(RateLimiter::class);
+
+try {
+    $result = $rateLimiter->attempt('api:user:123', 60, function() {
+        // Your rate-limited code here
+        return processApiRequest();
+    });
+} catch (RateLimitExceededException $e) {
+    // Handle rate limit exceeded
+    return response(['error' => 'Rate limit exceeded'], 429);
+}
+```
+
 ## 🏢 Built for the Real World
 
 Refynd powers applications that matter:
 
-- **🌐 Web Applications** - From simple sites to complex platforms
-- **🔌 REST APIs** - Scalable backends for mobile and SPA applications  
-- **⚡ Microservices** - Event-driven architectures that scale
-- **🏢 Enterprise Systems** - Business applications with complex workflows
-- **📱 Modern Platforms** - Content management, e-commerce, forums
+- **🌐 Web Applications** - From simple sites to complex platforms with real-time features
+- **🔌 REST APIs** - Scalable backends with rate limiting and queue processing
+- **⚡ Real-time Applications** - WebSocket-powered chat, notifications, and live updates
+- **🏢 Enterprise Systems** - Business applications with background processing
+- **📱 Modern Platforms** - Content management, e-commerce, forums with enterprise features
 
 ## 🔧 Requirements
 
-- **PHP 8.2+** - Modern PHP with all the latest features
+- **PHP 8.4+** - Modern PHP with all the latest features
 - **Composer** - For dependency management
-- **Extensions** (optional):
-  - `ext-redis` - For Redis cache driver
+- **Extensions**:
+  - `ext-sockets` - Required for WebSocket support
+  - `ext-pcntl` - Required for queue worker process control
+- **Optional Extensions**:
+  - `ext-redis` - For Redis cache driver and enhanced rate limiting
   - `ext-memcached` - For Memcached cache driver
 
 ## 📚 Documentation
 
+- **[Authentication Guide](docs/AUTHENTICATION.md)** - Complete authentication system setup
+- **[Rate Limiting Guide](docs/RATE_LIMITING.md)** - Comprehensive rate limiting documentation
+- **[WebSocket Guide](docs/WEBSOCKET_RATE_LIMITING.md)** - Real-time WebSocket implementation
 - **[ORM Guide](docs/ORM.md)** - Complete ORM documentation with examples
 - **[Core Capabilities](docs/CURRENT_CAPABILITIES.md)** - Complete component overview
 - **[What You Can Build](docs/WHAT_YOU_CAN_BUILD.md)** - Application examples and patterns
+- **[Performance Optimizations](docs/PERFORMANCE_OPTIMIZATIONS.md)** - Framework optimization guide
 - **[API Reference](https://github.com/refynd/framework/wiki)** - Detailed API documentation
 
 ## 🤝 Contributing
