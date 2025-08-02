@@ -90,7 +90,12 @@ class BelongsTo extends Relation
      */
     public function associate(Model $model): Model
     {
-        $this->parent->setAttribute($this->foreignKey, $model->getAttribute($this->ownerKey));
+        $ownerKeyValue = $model->getAttribute($this->ownerKey);
+        if ($ownerKeyValue === null) {
+            throw new \InvalidArgumentException('Model must have a value for the owner key to associate');
+        }
+
+        $this->parent->setAttribute($this->foreignKey, $ownerKeyValue);
 
         return $this->parent->setRelation($this->getRelationName(), $model);
     }
@@ -103,6 +108,20 @@ class BelongsTo extends Relation
         $this->parent->setAttribute($this->foreignKey, null);
 
         return $this->parent->setRelation($this->getRelationName(), null);
+    }
+
+    /**
+     * Update the parent to point to a new related model by ID
+     */
+    public function associateById(mixed $id): Model
+    {
+        if ($id === null) {
+            return $this->dissociate();
+        }
+
+        $this->parent->setAttribute($this->foreignKey, $id);
+
+        return $this->parent;
     }
 
     /**

@@ -109,9 +109,20 @@ class BelongsToMany extends Relation
             $ids = [$ids];
         }
 
+        $parentKey = $this->parent->getKey();
+        if ($parentKey === null) {
+            throw new \InvalidArgumentException('Parent model must have a key to attach relationships');
+        }
+
         foreach ($ids as $id) {
-            $pivotData = array_merge([$this->foreignPivotKey => $this->parent->getKey(),
-                $this->relatedPivotKey => $id,], $attributes);
+            if ($id === null) {
+                continue; // Skip null IDs
+            }
+
+            $pivotData = array_merge([
+                $this->foreignPivotKey => $parentKey,
+                $this->relatedPivotKey => $id,
+            ], $attributes);
 
             $this->insertPivot($pivotData);
         }
@@ -122,12 +133,24 @@ class BelongsToMany extends Relation
      */
     public function detach(mixed $ids = null): int
     {
+        $parentKey = $this->parent->getKey();
+        if ($parentKey === null) {
+            throw new \InvalidArgumentException('Parent model must have a key to detach relationships');
+        }
+
         $sql = "DELETE FROM {$this->table} WHERE {$this->foreignPivotKey} = :parent_key";
-        $bindings = [':parent_key' => $this->parent->getKey()];
+        $bindings = [':parent_key' => $parentKey];
 
         if ($ids !== null) {
             if (!is_array($ids)) {
                 $ids = [$ids];
+            }
+
+            // Filter out null values
+            $ids = array_filter($ids, fn($id) => $id !== null);
+            
+            if (empty($ids)) {
+                return 0; // No valid IDs to detach
             }
 
             $placeholders = [];
@@ -148,8 +171,16 @@ class BelongsToMany extends Relation
      */
     public function sync(array $ids): array
     {
+        $parentKey = $this->parent->getKey();
+        if ($parentKey === null) {
+            throw new \InvalidArgumentException('Parent model must have a key to sync relationships');
+        }
+
         // Get current IDs
         $current = $this->getCurrentIds();
+
+        // Filter out null values from input
+        $ids = array_filter($ids, fn($id) => $id !== null);
 
         // Determine what to attach and detach
         $toAttach = array_diff($ids, $current);
@@ -164,9 +195,11 @@ class BelongsToMany extends Relation
             $this->attach($toAttach);
         }
 
-        return ['attached' => $toAttach,
+        return [
+            'attached' => $toAttach,
             'detached' => $toDetach,
-            'updated' => [],];
+            'updated' => [],
+        ];
     }
 
     /**
@@ -174,8 +207,13 @@ class BelongsToMany extends Relation
      */
     protected function getCurrentIds(): array
     {
+        $parentKey = $this->parent->getKey();
+        if ($parentKey === null) {
+            return [];
+        }
+
         $sql = "SELECT {$this->relatedPivotKey} FROM {$this->table} WHERE {$this->foreignPivotKey} = :parent_key";
-        $results = Ledger::select($sql, [':parent_key' => $this->parent->getKey()]);
+        $results = Ledger::select($sql, [':parent_key' => $parentKey]);
 
         return array_column($results, $this->relatedPivotKey);
     }

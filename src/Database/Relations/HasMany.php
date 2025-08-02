@@ -91,7 +91,12 @@ class HasMany extends Relation
      */
     public function create(array $attributes = []): Model
     {
-        $attributes[$this->foreignKey] = $this->parent->getAttribute($this->localKey);
+        $localKeyValue = $this->parent->getAttribute($this->localKey);
+        if ($localKeyValue === null) {
+            throw new \InvalidArgumentException('Parent model must have a value for the local key to create related models');
+        }
+
+        $attributes[$this->foreignKey] = $localKeyValue;
 
         return $this->related::create($attributes);
     }
@@ -101,9 +106,45 @@ class HasMany extends Relation
      */
     public function save(Model $model): bool
     {
-        $model->setAttribute($this->foreignKey, $this->parent->getAttribute($this->localKey));
+        $localKeyValue = $this->parent->getAttribute($this->localKey);
+        if ($localKeyValue === null) {
+            throw new \InvalidArgumentException('Parent model must have a value for the local key to save related models');
+        }
+
+        $model->setAttribute($this->foreignKey, $localKeyValue);
 
         return $model->save();
+    }
+
+    /**
+     * Create multiple related models
+     * @return Collection<int, Model>
+     */
+    public function createMany(array $records): Collection
+    {
+        $models = new Collection();
+
+        foreach ($records as $attributes) {
+            $models->push($this->create($attributes));
+        }
+
+        return $models;
+    }
+
+    /**
+     * Save multiple related models
+     */
+    public function saveMany(array $models): bool
+    {
+        $result = true;
+
+        foreach ($models as $model) {
+            if (!$this->save($model)) {
+                $result = false;
+            }
+        }
+
+        return $result;
     }
 
     /**

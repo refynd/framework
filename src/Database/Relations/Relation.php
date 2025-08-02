@@ -62,6 +62,38 @@ abstract class Relation
     }
 
     /**
+     * Get the parent model
+     */
+    public function getParent(): Model
+    {
+        return $this->parent;
+    }
+
+    /**
+     * Get the related model
+     */
+    public function getRelated(): Model
+    {
+        return $this->related;
+    }
+
+    /**
+     * Get the relation name from the call stack
+     */
+    protected function getRelationName(): string
+    {
+        $trace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 10);
+        
+        foreach ($trace as $frame) {
+            if (isset($frame['class']) && is_subclass_of($frame['class'], Model::class)) {
+                return $frame['function'];
+            }
+        }
+        
+        return 'unknown';
+    }
+
+    /**
      * Add a constraint to the relationship query
      */
     public function where(string $column, string $operator, mixed $value = null): self
