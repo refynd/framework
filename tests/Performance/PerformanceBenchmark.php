@@ -103,7 +103,7 @@ class PerformanceBenchmark
      */
     public function benchmarkRouteMatching(): void
     {
-        echo "🛣️  Benchmarking Route Matching...\n";
+        $this->output("🛣️  Benchmarking Route Matching...\n");
         
         $container = new Container();
         $router = new Router($container);
@@ -142,9 +142,9 @@ class PerformanceBenchmark
             'iterations' => $this->iterations,
         ];
         
-        echo "  Without compilation: {$this->results['routing']['without_compilation']}s\n";
-        echo "  With compilation: {$this->results['routing']['with_compilation']}s\n";
-        echo "  Improvement: {$this->results['routing']['improvement_percent']}%\n\n";
+        $this->output("  Without compilation: {$this->results['routing']['without_compilation']}s\n");
+        $this->output("  With compilation: {$this->results['routing']['with_compilation']}s\n");
+        $this->output("  Improvement: {$this->results['routing']['improvement_percent']}%\n\n");
     }
     
     /**
@@ -152,7 +152,7 @@ class PerformanceBenchmark
      */
     public function benchmarkCaching(): void
     {
-        echo "💾 Benchmarking Cache Performance...\n";
+        $this->output("💾 Benchmarking Cache Performance...\n");
         
         $fileStore = new FileStore(['path' => sys_get_temp_dir() . '/benchmark_cache']);
         $highPerfCache = new HighPerformanceCache($fileStore);
@@ -191,10 +191,10 @@ class PerformanceBenchmark
             'iterations' => $this->iterations,
         ];
         
-        echo "  Regular cache: {$this->results['caching']['regular_cache']}s\n";
-        echo "  High-performance cache: {$this->results['caching']['high_performance_cache']}s\n";
-        echo "  Improvement: {$this->results['caching']['improvement_percent']}%\n";
-        echo "  Hit ratio: {$this->results['caching']['hit_ratio']}%\n\n";
+        $this->output("  Regular cache: {$this->results['caching']['regular_cache']}s\n");
+        $this->output("  High-performance cache: {$this->results['caching']['high_performance_cache']}s\n");
+        $this->output("  Improvement: {$this->results['caching']['improvement_percent']}%\n");
+        $this->output("  Hit ratio: {$this->results['caching']['hit_ratio']}%\n\n");
         
         // Cleanup
         $fileStore->flush();
@@ -205,7 +205,7 @@ class PerformanceBenchmark
      */
     public function benchmarkBootstrap(): void
     {
-        echo "🏗️  Benchmarking Bootstrap Performance...\n";
+        $this->output("🏗️  Benchmarking Bootstrap Performance...\n");
         
         // Create a temporary directory for testing
         $tempDir = sys_get_temp_dir() . '/refynd_benchmark_' . uniqid();
@@ -246,7 +246,7 @@ class PerformanceBenchmark
         }
         
         if (empty($times)) {
-            echo "  Bootstrap benchmark failed - no successful boots\n\n";
+            $this->output("  Bootstrap benchmark failed - no successful boots\n\n");
             return;
         }
         
@@ -261,9 +261,9 @@ class PerformanceBenchmark
             'iterations' => count($times),
         ];
         
-        echo "  Average bootstrap time: {$this->results['bootstrap']['average_time']}s\n";
-        echo "  Min time: {$this->results['bootstrap']['min_time']}s\n";
-        echo "  Max time: {$this->results['bootstrap']['max_time']}s\n\n";
+        $this->output("  Average bootstrap time: {$this->results['bootstrap']['average_time']}s\n");
+        $this->output("  Min time: {$this->results['bootstrap']['min_time']}s\n");
+        $this->output("  Max time: {$this->results['bootstrap']['max_time']}s\n\n");
     }
     
     /**
