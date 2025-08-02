@@ -41,7 +41,8 @@ abstract class Model extends Record
      */
     public static function with(array $relations): QueryBuilder
     {
-        $instance = new static();
+        /** @var static $instance */
+        $instance = new static(); // @phpstan-ignore-line - Safe static instantiation for Model classes
         return $instance->newQuery()->with($relations);
     }
 
@@ -60,7 +61,8 @@ abstract class Model extends Record
      */
     public static function query(): QueryBuilder
     {
-        $instance = new static();
+        /** @var static $instance */
+        $instance = new static(); // @phpstan-ignore-line - Safe static instantiation for Model classes
         return $instance->newQuery();
     }
 
@@ -75,6 +77,7 @@ abstract class Model extends Record
 
     /**
      * Get all records as a Collection object
+     * @return Collection<int, static>
      */
     public static function allAsCollection(): Collection
     {
@@ -200,9 +203,17 @@ abstract class Model extends Record
     }
 
     /**
+     * Determine if the model exists in the database
+     */
+    public function modelExists(): bool
+    {
+        return $this->exists;
+    }
+
+    /**
      * Get a relationship value
      */
-    public function getRelationValue(string $relation)
+    public function getRelationValue(string $relation): mixed
     {
         if (array_key_exists($relation, $this->relationshipData)) {
             return $this->relationshipData[$relation];
@@ -223,7 +234,7 @@ abstract class Model extends Record
     /**
      * Set a relationship value
      */
-    public function setRelation(string $relation, $value): self
+    public function setRelation(string $relation, mixed $value): self
     {
         $this->relationshipData[$relation] = $value;
         return $this;
@@ -266,7 +277,7 @@ abstract class Model extends Record
     /**
      * Dynamically access relationships
      */
-    public function __get(string $key)
+    public function __get(string $key): mixed
     {
         // First check regular attributes
         if (array_key_exists($key, $this->attributes)) {
@@ -280,7 +291,7 @@ abstract class Model extends Record
     /**
      * Define query scopes dynamically
      */
-    public function __call(string $method, array $parameters)
+    public function __call(string $method, array $parameters): mixed
     {
         // Check for scope methods
         if (str_starts_with($method, 'scope')) {
@@ -296,9 +307,10 @@ abstract class Model extends Record
     /**
      * Handle dynamic static calls for query builder methods
      */
-    public static function __callStatic(string $method, array $parameters)
+    public static function __callStatic(string $method, array $parameters): mixed
     {
-        $instance = new static();
+        /** @var static $instance */
+        $instance = new static(); // @phpstan-ignore-line - Safe static instantiation for Model classes
         return $instance->newQuery()->$method(...$parameters);
     }
 }

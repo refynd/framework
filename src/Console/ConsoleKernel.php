@@ -4,6 +4,7 @@ namespace Refynd\Console;
 
 use Refynd\Container\Container;
 use Symfony\Component\Console\Application;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
@@ -53,7 +54,7 @@ class ConsoleKernel
     /**
      * Add a command to the console application
      */
-    public function addCommand($command): void
+    public function addCommand(Command $command): void
     {
         $this->console->add($command);
     }

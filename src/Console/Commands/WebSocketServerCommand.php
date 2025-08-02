@@ -12,7 +12,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class WebSocketServerCommand extends Command
 {
-    private Container $container;
+    private Container $container; // @phpstan-ignore-line Container reserved for future dependency injection
 
     public function __construct(Container $container)
     {

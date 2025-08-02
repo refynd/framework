@@ -30,7 +30,7 @@ class BcryptHasher implements HashInterface
             'cost' => $cost,
         ]);
 
-        if ($hash === false) {
+        if (!is_string($hash) || empty($hash)) {
             throw new RuntimeException('Bcrypt hashing not supported.');
         }
 

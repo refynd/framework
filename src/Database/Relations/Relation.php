@@ -44,13 +44,14 @@ abstract class Relation
 
     /**
      * Match the eagerly loaded results to their parents
+     * @param Collection<int, Model> $results
      */
     abstract public function match(array $models, Collection $results, string $relation): array;
 
     /**
      * Get the results of the relationship
      */
-    abstract public function getResults();
+    abstract public function getResults(): mixed;
 
     /**
      * Get the relationship query
@@ -63,7 +64,7 @@ abstract class Relation
     /**
      * Add a constraint to the relationship query
      */
-    public function where(string $column, string $operator, $value = null): self
+    public function where(string $column, string $operator, mixed $value = null): self
     {
         $this->query->where($column, $operator, $value);
         return $this;
@@ -72,7 +73,7 @@ abstract class Relation
     /**
      * Add an "or where" constraint to the relationship query
      */
-    public function orWhere(string $column, string $operator, $value = null): self
+    public function orWhere(string $column, string $operator, mixed $value = null): self
     {
         $this->query->orWhere($column, $operator, $value);
         return $this;
@@ -98,6 +99,7 @@ abstract class Relation
 
     /**
      * Execute the query and get all results
+     * @return Collection<int, Model>
      */
     public function get(): Collection
     {
@@ -115,7 +117,7 @@ abstract class Relation
     /**
      * Find a related model by its primary key
      */
-    public function find($id): ?Model
+    public function find(mixed $id): ?Model
     {
         return $this->query->where($this->related->getKeyName(), $id)->first();
     }
@@ -155,7 +157,7 @@ abstract class Relation
     /**
      * Dynamically handle calls to the query builder
      */
-    public function __call(string $method, array $parameters)
+    public function __call(string $method, array $parameters): mixed
     {
         $result = $this->query->$method(...$parameters);
 

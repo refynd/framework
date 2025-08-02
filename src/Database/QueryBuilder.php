@@ -38,7 +38,7 @@ class QueryBuilder
     /**
      * Add a WHERE clause
      */
-    public function where(string $column, string $operator, $value = null): self
+    public function where(string $column, string $operator, mixed $value = null): self
     {
         // Handle where($column, $value) syntax
         if ($value === null) {
@@ -60,7 +60,7 @@ class QueryBuilder
     /**
      * Add an OR WHERE clause
      */
-    public function orWhere(string $column, string $operator, $value = null): self
+    public function orWhere(string $column, string $operator, mixed $value = null): self
     {
         if ($value === null) {
             $value = $operator;
@@ -195,8 +195,9 @@ class QueryBuilder
 
     /**
      * Execute the query and return all results
+     * @return array|Collection<int, Model>
      */
-    public function get()
+    public function get(): array|Collection
     {
         $sql = $this->toSql();
         $results = Ledger::select($sql, $this->bindings);
@@ -223,7 +224,7 @@ class QueryBuilder
     /**
      * Execute the query and return the first result
      */
-    public function first()
+    public function first(): mixed
     {
         $this->limit(1);
         $results = $this->get();
@@ -255,6 +256,8 @@ class QueryBuilder
 
     /**
      * Load relationships for the collection
+     * @param Collection<int, Model> $collection
+     * @return Collection<int, Model>
      */
     protected function loadRelations(Collection $collection): Collection
     {

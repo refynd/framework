@@ -13,8 +13,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 class RateLimitCommand extends Command
 {
-    protected static $defaultName = 'rate-limit';
-    protected static $defaultDescription = 'Manage framework rate limiting';
+    protected static ?string $defaultName = 'rate-limit';
+    protected static string $defaultDescription = 'Manage framework rate limiting';
 
     protected function configure(): void
     {
@@ -57,7 +57,7 @@ class RateLimitCommand extends Command
         }
     }
 
-    private function getRateLimiter(string $component)
+    private function getRateLimiter(string $component): ?RateLimiter
     {
         switch ($component) {
             case 'websocket':
@@ -71,7 +71,7 @@ class RateLimitCommand extends Command
         }
     }
 
-    private function showStats(SymfonyStyle $io, string $component, $rateLimiter): int
+    private function showStats(SymfonyStyle $io, string $component, ?RateLimiter $rateLimiter): int
     {
         $io->title("Rate Limiter Statistics - {$component}");
         
@@ -105,7 +105,7 @@ class RateLimitCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function resetRateLimit(SymfonyStyle $io, string $component, $rateLimiter, ?string $key): int
+    private function resetRateLimit(SymfonyStyle $io, string $component, ?RateLimiter $rateLimiter, ?string $key): int
     {
         if ($component === 'websocket' && $rateLimiter instanceof WebSocketRateLimiter) {
             if ($key) {
@@ -128,6 +128,11 @@ class RateLimitCommand extends Command
         return Command::SUCCESS;
     }
 
+    /**
+     * Show rate limiter configuration
+     * @suppress PhanUnreferencedPrivateMethod
+     * @phpstan-ignore-next-line - Method reserved for future use
+     */
     private function showConfig(SymfonyStyle $io, InputInterface $input): int
     {
         $maxRequests = (int) $input->getOption('max-requests');
@@ -155,7 +160,7 @@ class RateLimitCommand extends Command
         return Command::SUCCESS;
     }
 
-    private function testRateLimit(SymfonyStyle $io, string $component, $rateLimiter, InputInterface $input): int
+    private function testRateLimit(SymfonyStyle $io, string $component, ?RateLimiter $rateLimiter, InputInterface $input): int
     {
         $maxRequests = (int) $input->getOption('max-requests');
         $timeWindow = (int) $input->getOption('time-window');

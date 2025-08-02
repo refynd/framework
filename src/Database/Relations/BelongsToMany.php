@@ -43,7 +43,7 @@ class BelongsToMany extends Relation
             $this->table . '.' . $this->relatedPivotKey
         );
 
-        if ($this->parent->exists) {
+        if ($this->parent->modelExists()) {
             $this->query->where($this->table . '.' . $this->foreignPivotKey, '=', $this->parent->getKey());
         }
     }
@@ -74,6 +74,7 @@ class BelongsToMany extends Relation
 
     /**
      * Match the eagerly loaded results to their parents
+     * @param Collection<int, Model> $results
      */
     public function match(array $models, Collection $results, string $relation): array
     {
@@ -92,6 +93,7 @@ class BelongsToMany extends Relation
 
     /**
      * Get the results of the relationship
+     * @return Collection<int, Model>
      */
     public function getResults(): Collection
     {
@@ -101,7 +103,7 @@ class BelongsToMany extends Relation
     /**
      * Attach models to the relationship
      */
-    public function attach($ids, array $attributes = []): void
+    public function attach(mixed $ids, array $attributes = []): void
     {
         if (!is_array($ids)) {
             $ids = [$ids];
@@ -120,7 +122,7 @@ class BelongsToMany extends Relation
     /**
      * Detach models from the relationship
      */
-    public function detach($ids = null): int
+    public function detach(mixed $ids = null): int
     {
         $sql = "DELETE FROM {$this->table} WHERE {$this->foreignPivotKey} = :parent_key";
         $bindings = [':parent_key' => $this->parent->getKey()];
@@ -202,6 +204,7 @@ class BelongsToMany extends Relation
 
     /**
      * Build the model dictionary for matching
+     * @param Collection<int, Model> $results
      */
     protected function buildDictionary(Collection $results): array
     {

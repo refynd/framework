@@ -152,7 +152,7 @@ class Ledger
     /**
      * Execute a callback within a transaction
      */
-    public static function transaction(callable $callback)
+    public static function transaction(callable $callback): mixed
     {
         static::beginTransaction();
 

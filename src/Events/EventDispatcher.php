@@ -145,22 +145,19 @@ class EventDispatcher
             return $listener;
         }
 
-        return function ($event) use ($listener) {
-            if (is_string($listener)) {
-                return $this->container->call($listener, ['event' => $event]);
-            }
+        if (is_string($listener)) {
+            return fn($event) => $this->container->call($listener, ['event' => $event]);
+        }
 
-            if (is_array($listener)) {
-                [$class, $method] = $listener;
-                
-                if (is_string($class)) {
-                    $class = $this->container->make($class);
-                }
-                
-                return $this->container->call([$class, $method], ['event' => $event]);
+        // Must be array based on type union
+        [$class, $method] = $listener;
+        
+        return function ($event) use ($class, $method) {
+            if (is_string($class)) {
+                $class = $this->container->make($class);
             }
-
-            throw new \InvalidArgumentException('Invalid event listener');
+            
+            return $this->container->call([$class, $method], ['event' => $event]);
         };
     }
 

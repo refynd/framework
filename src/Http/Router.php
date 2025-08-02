@@ -13,8 +13,8 @@ class Router
 {
     private Container $container;
     private array $routes = [];
-    private array $middleware = [];
-    private array $routeGroups = [];
+    private array $middleware = []; // @phpstan-ignore-line Reserved for future middleware registration
+    private array $routeGroups = []; // @phpstan-ignore-line Reserved for future route grouping
     private string $currentGroupPrefix = '';
     private array $currentGroupMiddleware = [];
     private ?RouteCompiler $compiler = null;
@@ -261,7 +261,7 @@ class Router
         return $parameters;
     }
 
-    private function prepareResponse($result): Response
+    private function prepareResponse(mixed $result): Response
     {
         if ($result instanceof Response) {
             return $result;

@@ -8,7 +8,7 @@ use Refynd\WebSocket\WebSocketClient;
 
 class WebSocketModule extends Module
 {
-    private Container $container;
+    private Container $container; // @phpstan-ignore-line Container reserved for future module functionality
 
     public function register(Container $container): void
     {

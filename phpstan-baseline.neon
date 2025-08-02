@@ -1,0 +1,56 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Method Refynd\\\\Database\\\\Collection\\:\\:filter\\(\\) should return static\\(Refynd\\\\Database\\\\Collection\\<TKey of \\(int\\|string\\), TValue\\>\\) but returns Refynd\\\\Database\\\\Collection\\<\\(int\\|string\\), mixed\\>\\.$#"
+			count: 2
+			path: src/Database/Collection.php
+
+		-
+			message: "#^Method Refynd\\\\Database\\\\Collection\\:\\:groupBy\\(\\) should return static\\(Refynd\\\\Database\\\\Collection\\<TKey of \\(int\\|string\\), TValue\\>\\) but returns Refynd\\\\Database\\\\Collection\\<\\(int\\|string\\), mixed\\>\\.$#"
+			count: 1
+			path: src/Database/Collection.php
+
+		-
+			message: "#^Method Refynd\\\\Database\\\\Collection\\:\\:make\\(\\) should return static\\(Refynd\\\\Database\\\\Collection\\<TKey of \\(int\\|string\\), TValue\\>\\) but returns Refynd\\\\Database\\\\Collection\\<\\(int\\|string\\), mixed\\>\\.$#"
+			count: 1
+			path: src/Database/Collection.php
+
+		-
+			message: "#^Method Refynd\\\\Database\\\\Collection\\:\\:map\\(\\) should return static\\(Refynd\\\\Database\\\\Collection\\<TKey of \\(int\\|string\\), TValue\\>\\) but returns Refynd\\\\Database\\\\Collection\\<\\(int\\|string\\), mixed\\>\\.$#"
+			count: 1
+			path: src/Database/Collection.php
+
+		-
+			message: "#^Method Refynd\\\\Database\\\\Collection\\:\\:pluck\\(\\) should return static\\(Refynd\\\\Database\\\\Collection\\<TKey of \\(int\\|string\\), TValue\\>\\) but returns Refynd\\\\Database\\\\Collection\\<\\(int\\|string\\), mixed\\>\\.$#"
+			count: 1
+			path: src/Database/Collection.php
+
+		-
+			message: "#^Method Refynd\\\\Database\\\\Collection\\:\\:reverse\\(\\) should return static\\(Refynd\\\\Database\\\\Collection\\<TKey of \\(int\\|string\\), TValue\\>\\) but returns Refynd\\\\Database\\\\Collection\\<\\(int\\|string\\), mixed\\>\\.$#"
+			count: 1
+			path: src/Database/Collection.php
+
+		-
+			message: "#^Method Refynd\\\\Database\\\\Collection\\:\\:slice\\(\\) should return static\\(Refynd\\\\Database\\\\Collection\\<TKey of \\(int\\|string\\), TValue\\>\\) but returns Refynd\\\\Database\\\\Collection\\<\\(int\\|string\\), mixed\\>\\.$#"
+			count: 1
+			path: src/Database/Collection.php
+
+		-
+			message: "#^Method Refynd\\\\Database\\\\Collection\\:\\:sort\\(\\) should return static\\(Refynd\\\\Database\\\\Collection\\<TKey of \\(int\\|string\\), TValue\\>\\) but returns Refynd\\\\Database\\\\Collection\\<\\(int\\|string\\), mixed\\>\\.$#"
+			count: 1
+			path: src/Database/Collection.php
+
+		-
+			message: "#^Method Refynd\\\\Database\\\\Collection\\:\\:sortBy\\(\\) should return static\\(Refynd\\\\Database\\\\Collection\\<TKey of \\(int\\|string\\), TValue\\>\\) but returns Refynd\\\\Database\\\\Collection\\<\\(int\\|string\\), mixed\\>\\.$#"
+			count: 1
+			path: src/Database/Collection.php
+
+		-
+			message: "#^Method Refynd\\\\Database\\\\Collection\\:\\:unique\\(\\) should return static\\(Refynd\\\\Database\\\\Collection\\<TKey of \\(int\\|string\\), TValue\\>\\) but returns Refynd\\\\Database\\\\Collection\\<\\(int\\|string\\), mixed\\>\\.$#"
+			count: 2
+			path: src/Database/Collection.php
+
+		-
+			message: "#^Method Refynd\\\\Database\\\\Model\\:\\:allAsCollection\\(\\) should return Refynd\\\\Database\\\\Collection\\<int, static\\(Refynd\\\\Database\\\\Model\\)\\> but returns array\\|Refynd\\\\Database\\\\Collection\\<int, Refynd\\\\Database\\\\Model\\>\\.$#"
+			count: 1
+			path: src/Database/Model.php

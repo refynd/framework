@@ -38,7 +38,7 @@ class ArgonHasher implements HashInterface
             'threads' => $options['threads'] ?? $this->threads,
         ]);
 
-        if ($hash === false) {
+        if (!is_string($hash) || empty($hash)) {
             throw new RuntimeException('Argon2ID hashing failed.');
         }
 

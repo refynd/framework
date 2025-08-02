@@ -95,7 +95,7 @@ class Route
     private function getParameterNames(): array
     {
         preg_match_all('/\{([^}]+)\}/', $this->uri, $matches);
-        return $matches[1] ?? [];
+        return $matches[1];
     }
 
     public function getMethods(): array

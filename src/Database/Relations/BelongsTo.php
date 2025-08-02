@@ -29,7 +29,7 @@ class BelongsTo extends Relation
      */
     public function addConstraints(): void
     {
-        if ($this->parent->exists) {
+        if ($this->parent->modelExists()) {
             $this->query->where($this->ownerKey, '=', $this->parent->getAttribute($this->foreignKey));
         }
     }
@@ -60,6 +60,7 @@ class BelongsTo extends Relation
 
     /**
      * Match the eagerly loaded results to their parents
+     * @param Collection<int, Model> $results
      */
     public function match(array $models, Collection $results, string $relation): array
     {
@@ -114,6 +115,7 @@ class BelongsTo extends Relation
 
     /**
      * Build the model dictionary for matching
+     * @param Collection<int, Model> $results
      */
     protected function buildDictionary(Collection $results): array
     {

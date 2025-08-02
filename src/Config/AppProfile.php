@@ -17,7 +17,7 @@ class AppProfile
     protected string $basePath;
     protected string $environment;
 
-    public function __construct(string $basePath = null, string $environment = 'production')
+    public function __construct(?string $basePath = null, string $environment = 'production')
     {
         $this->basePath = $basePath ?? $this->detectBasePath();
         $this->environment = $environment;
@@ -113,7 +113,7 @@ class AppProfile
     /**
      * Get a configuration value
      */
-    public function get(string $key, $default = null)
+    public function get(string $key, mixed $default = null): mixed
     {
         return $this->getValue($key, $default);
     }
@@ -121,7 +121,7 @@ class AppProfile
     /**
      * Set a configuration value
      */
-    public function set(string $key, $value): void
+    public function set(string $key, mixed $value): void
     {
         $this->setValue($key, $value);
     }
@@ -234,7 +234,7 @@ class AppProfile
     /**
      * Get a nested configuration value using dot notation
      */
-    protected function getValue(string $key, $default = null)
+    protected function getValue(string $key, mixed $default = null): mixed
     {
         $keys = explode('.', $key);
         $value = $this->config;
@@ -252,7 +252,7 @@ class AppProfile
     /**
      * Set a nested configuration value using dot notation
      */
-    protected function setValue(string $key, $value): void
+    protected function setValue(string $key, mixed $value): void
     {
         $keys = explode('.', $key);
         $config = &$this->config;

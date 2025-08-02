@@ -111,7 +111,7 @@ class DatabaseUserProvider implements UserProviderInterface
         }
 
         if ($user instanceof Model) {
-            $user->password = $this->hasher->make($credentials['password']);
+            $user->setAttribute('password', $this->hasher->make($credentials['password']));
             $user->save();
         }
     }

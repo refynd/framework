@@ -9,7 +9,7 @@ use Refynd\Container\Container;
 class ThrottleMiddleware
 {
     private HttpRateLimiter $rateLimiter;
-    private Container $container;
+    private Container $container; // @phpstan-ignore-line Container reserved for future middleware enhancement
 
     public function __construct(Container $container)
     {
@@ -50,7 +50,7 @@ class ThrottleMiddleware
     /**
      * Get the client IP address.
      */
-    protected function getClientIp($request): string
+    protected function getClientIp(object $request): string
     {
         // Try to get real IP from common proxy headers
         $headers = [
@@ -86,7 +86,7 @@ class ThrottleMiddleware
     /**
      * Get the route identifier.
      */
-    protected function getRoute($request): string
+    protected function getRoute(object $request): string
     {
         // This would be implementation-specific
         // For now, use the request URI
@@ -96,7 +96,7 @@ class ThrottleMiddleware
     /**
      * Get the user ID if authenticated.
      */
-    protected function getUserId($request): ?string
+    protected function getUserId(object $request): ?string
     {
         // This would be implementation-specific
         // For now, return null (anonymous requests)
@@ -130,7 +130,7 @@ class ThrottleMiddleware
     /**
      * Add rate limiting headers to the response.
      */
-    protected function addHeaders($response, array $headers): mixed
+    protected function addHeaders(mixed $response, array $headers): mixed
     {
         // This would be implementation-specific based on your response format
         if (is_array($response)) {

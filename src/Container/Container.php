@@ -29,7 +29,7 @@ class Container implements ContainerInterface
     /**
      * Bind a type to the container
      */
-    public function bind(string $abstract, $concrete = null, bool $shared = false): void
+    public function bind(string $abstract, mixed $concrete = null, bool $shared = false): void
     {
         if ($concrete === null) {
             $concrete = $abstract;
@@ -44,7 +44,7 @@ class Container implements ContainerInterface
     /**
      * Bind a singleton to the container
      */
-    public function singleton(string $abstract, $concrete = null): void
+    public function singleton(string $abstract, mixed $concrete = null): void
     {
         $this->bind($abstract, $concrete, true);
     }
@@ -52,7 +52,7 @@ class Container implements ContainerInterface
     /**
      * Register an existing instance as a singleton
      */
-    public function instance(string $abstract, $instance): void
+    public function instance(string $abstract, mixed $instance): void
     {
         $this->instances[$abstract] = $instance;
     }
@@ -60,7 +60,7 @@ class Container implements ContainerInterface
     /**
      * Resolve a type from the container
      */
-    public function make(string $abstract, array $parameters = [])
+    public function make(string $abstract, array $parameters = []): mixed
     {
         return $this->resolve($abstract, $parameters);
     }
@@ -76,7 +76,7 @@ class Container implements ContainerInterface
     /**
      * Get an entry from the container
      */
-    public function get(string $id)
+    public function get(string $id): mixed
     {
         if (!$this->has($id) && !class_exists($id)) {
             throw new RuntimeException("No binding found for [{$id}]");
@@ -88,7 +88,7 @@ class Container implements ContainerInterface
     /**
      * Resolve the given type from the container
      */
-    protected function resolve(string $abstract, array $parameters = [])
+    protected function resolve(string $abstract, array $parameters = []): mixed
     {
         // Return existing instance if singleton
         if (isset($this->instances[$abstract])) {
@@ -125,7 +125,7 @@ class Container implements ContainerInterface
     /**
      * Get the concrete type for a given abstract
      */
-    protected function getConcrete(string $abstract)
+    protected function getConcrete(string $abstract): mixed
     {
         if (isset($this->bindings[$abstract])) {
             return $this->bindings[$abstract]['concrete'];
@@ -146,7 +146,7 @@ class Container implements ContainerInterface
     /**
      * Instantiate a concrete instance of the given type
      */
-    protected function build(string $concrete, array $parameters = [])
+    protected function build(string $concrete, array $parameters = []): mixed
     {
         // Check reflection cache first
         if (!isset($this->reflectionCache[$concrete])) {
@@ -228,7 +228,7 @@ class Container implements ContainerInterface
     /**
      * Resolve a single dependency
      */
-    protected function resolveDependency(ReflectionParameter $parameter, array $parameters = [])
+        protected function resolveDependency(ReflectionParameter $parameter, array $parameters = []): mixed
     {
         $name = $parameter->getName();
 
@@ -297,7 +297,7 @@ class Container implements ContainerInterface
     /**
      * Call a method with automatic dependency injection
      */
-    public function call($callback, array $parameters = [])
+    public function call(callable|array $callback, array $parameters = []): mixed
     {
         if (is_array($callback)) {
             [$class, $method] = $callback;

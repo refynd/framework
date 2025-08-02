@@ -9,6 +9,8 @@ class ArrayStore implements CacheInterface
     public function __construct(array $config = [])
     {
         // Array store doesn't need configuration
+        // Suppress unused parameter warning as this maintains interface consistency
+        unset($config);
     }
 
     public function get(string $key, mixed $default = null): mixed

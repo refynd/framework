@@ -29,7 +29,7 @@ class HasMany extends Relation
      */
     public function addConstraints(): void
     {
-        if ($this->parent->exists) {
+        if ($this->parent->modelExists()) {
             $this->query->where($this->foreignKey, '=', $this->parent->getAttribute($this->localKey));
         }
     }
@@ -60,6 +60,7 @@ class HasMany extends Relation
 
     /**
      * Match the eagerly loaded results to their parents
+     * @param Collection<int, Model> $results
      */
     public function match(array $models, Collection $results, string $relation): array
     {
@@ -78,6 +79,7 @@ class HasMany extends Relation
 
     /**
      * Get the results of the relationship
+     * @return Collection<int, Model>
      */
     public function getResults(): Collection
     {
@@ -106,6 +108,7 @@ class HasMany extends Relation
 
     /**
      * Build the model dictionary for matching
+     * @param Collection<int, Model> $results
      */
     protected function buildDictionary(Collection $results): array
     {
