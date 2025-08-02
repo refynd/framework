@@ -1,0 +1,10 @@
+# Prism template files
+*.prism linguist-language=Prism
+*.prism.php linguist-language=Prism
+
+# Ensure Prism is detected as markup/template language  
+*.prism linguist-detectable=true
+*.prism.php linguist-detectable=true
+
+# Sample files for demonstration
+samples/*.prism linguist-sample=true
