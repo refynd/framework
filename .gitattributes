@@ -1,4 +1,10 @@
-# Prism template files
+# Refynd Framework Language Attributes
+# Ensures proper language detection and repository statistics
+
+# =============================================================================
+# PRISM TEMPLATE ENGINE
+# =============================================================================
+# Prism template files - Refynd's elegant templating language
 *.prism linguist-language=Prism
 *.prism.php linguist-language=Prism
 
@@ -6,5 +12,77 @@
 *.prism linguist-detectable=true
 *.prism.php linguist-detectable=true
 
-# Sample files for demonstration
-samples/*.prism linguist-sample=true
+# =============================================================================
+# PHP FRAMEWORK FILES
+# =============================================================================
+# PHP source files (main framework language)
+*.php linguist-detectable=true
+
+# Ensure PHP files are properly categorized
+src/**/*.php linguist-language=PHP
+tests/**/*.php linguist-language=PHP
+
+# =============================================================================
+# CONFIGURATION & DATA FILES
+# =============================================================================
+# Composer files
+composer.json linguist-language=JSON
+composer.lock linguist-generated=true
+
+# Documentation files
+*.md linguist-documentation=true
+docs/**/*.md linguist-documentation=true
+README.md linguist-documentation=true
+CONTRIBUTING.md linguist-documentation=true
+CHANGELOG.md linguist-documentation=true
+
+# =============================================================================
+# BUILD & DEVELOPMENT FILES
+# =============================================================================
+# PHPUnit configuration
+phpunit.xml linguist-language=XML
+phpunit.xml.dist linguist-language=XML
+
+# PHPStan configuration
+phpstan.neon linguist-language=YAML
+
+# =============================================================================
+# EXCLUDE FROM LANGUAGE STATISTICS
+# =============================================================================
+# Vendor dependencies (not our code)
+vendor/* linguist-vendored
+
+# Build artifacts
+build/* linguist-generated
+
+# Cache directories
+.phpunit.cache/* linguist-generated
+storage/cache/* linguist-generated
+storage/logs/* linguist-generated
+
+# Example/Sample files for documentation
+examples/* linguist-documentation
+samples/* linguist-sample
+
+# =============================================================================
+# FILE HANDLING ATTRIBUTES
+# =============================================================================
+# Ensure consistent line endings
+*.php text eol=lf
+*.prism text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.xml text eol=lf
+
+# Binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.woff binary
+*.woff2 binary
+*.ttf binary
+*.eot binary
