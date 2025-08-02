@@ -1,5 +1,7 @@
 <?php
 
+namespace Tests\Performance;
+
 require_once __DIR__ . '/../../vendor/autoload.php';
 
 use Refynd\Container\Container;
@@ -15,25 +17,27 @@ echo "📦 Testing Container Performance...\n";
 
 $container = new Container();
 
-// Simple class for testing
-class TestService {
+// Use anonymous class to avoid PSR-4 issues
+$testServiceClass = new class {
     public function getValue(): string { return 'test'; }
-}
+};
 
-$container->bind(TestService::class);
+$container->bind('TestService', function() use ($testServiceClass) {
+    return $testServiceClass;
+});
 
 // Without cache
 $container->clearCaches();
 $start = microtime(true);
 for ($i = 0; $i < 1000; $i++) {
-    $container->make(TestService::class);
+    $container->make('TestService');
 }
 $withoutCache = microtime(true) - $start;
 
 // With cache (run again to populate cache)
 $start = microtime(true);
 for ($i = 0; $i < 1000; $i++) {
-    $container->make(TestService::class);
+    $container->make('TestService');
 }
 $withCache = microtime(true) - $start;
 
