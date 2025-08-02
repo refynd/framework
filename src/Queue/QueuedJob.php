@@ -44,14 +44,12 @@ class QueuedJob
 
     public function toArray(): array
     {
-        return [
-            'id' => $this->id,
+        return ['id' => $this->id,
             'queue' => $this->queue,
             'job' => serialize($this->job),
             'attempts' => $this->attempts,
             'created_at' => $this->createdAt,
-            'available_at' => $this->availableAt,
-        ];
+            'available_at' => $this->availableAt,];
     }
 
     public static function fromArray(array $data): self

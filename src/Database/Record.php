@@ -7,7 +7,7 @@ use RuntimeException;
 
 /**
  * Record - Base Model Class for Ledger ORM
- * 
+ *
  * Active Record-style base class for all database models.
  * Provides elegant methods for database interactions.
  */
@@ -25,7 +25,7 @@ abstract class Record
     public function __construct(array $attributes = [])
     {
         $this->fill($attributes);
-        
+
         if (empty($this->table)) {
             $this->table = $this->getDefaultTableName();
         }
@@ -67,7 +67,7 @@ abstract class Record
     public static function findOrFail(mixed $id): static
     {
         $record = static::find($id);
-        
+
         if ($record === null) {
             throw new RuntimeException("Record not found with ID: {$id}");
         }
@@ -83,8 +83,8 @@ abstract class Record
         /** @var static $instance */
         $instance = new static(); // @phpstan-ignore-line - Safe static instantiation for Record classes
         $results = $instance->newQuery()->get();
-        
-        return array_map(function($result) use ($instance) {
+
+        return array_map(function ($result) use ($instance) {
             return $instance->newFromDatabase($result);
         }, $results);
     }
@@ -117,7 +117,7 @@ abstract class Record
         $instance->attributes = $instance->castAttributes($attributes);
         $instance->original = $instance->attributes;
         $instance->exists = true;
-        
+
         return $instance;
     }
 
@@ -158,7 +158,7 @@ abstract class Record
 
         $sql = "DELETE FROM {$this->table} WHERE {$this->primaryKey} = :id";
         $affected = Ledger::statement($sql, [':id' => $this->getKey()]);
-        
+
         if ($affected > 0) {
             $this->exists = false;
             return true;
@@ -245,23 +245,23 @@ abstract class Record
     protected function performInsert(): bool
     {
         $attributes = $this->getAttributesForInsert();
-        
+
         if (empty($attributes)) {
             return false;
         }
 
         $columns = array_keys($attributes);
-        $placeholders = array_map(fn($col) => ':' . $col, $columns);
-        
+        $placeholders = array_map(fn ($col) => ':' . $col, $columns);
+
         $sql = "INSERT INTO {$this->table} (" . implode(', ', $columns) . ") VALUES (" . implode(', ', $placeholders) . ")";
-        
+
         $bindings = [];
         foreach ($attributes as $key => $value) {
             $bindings[':' . $key] = $value;
         }
 
         $insertId = Ledger::insert($sql, $bindings);
-        
+
         if ($insertId) {
             $this->setAttribute($this->primaryKey, $insertId);
             $this->exists = true;
@@ -278,25 +278,25 @@ abstract class Record
     protected function performUpdate(): bool
     {
         $dirty = $this->getDirtyAttributes();
-        
+
         if (empty($dirty)) {
             return true; // No changes to save
         }
 
         $sets = [];
         $bindings = [];
-        
+
         foreach ($dirty as $key => $value) {
             $sets[] = "{$key} = :{$key}";
             $bindings[":{$key}"] = $value;
         }
-        
+
         $bindings[':id'] = $this->getKey();
-        
+
         $sql = "UPDATE {$this->table} SET " . implode(', ', $sets) . " WHERE {$this->primaryKey} = :id";
-        
+
         $affected = Ledger::statement($sql, $bindings);
-        
+
         if ($affected > 0) {
             $this->original = $this->attributes;
             return true;
@@ -311,7 +311,7 @@ abstract class Record
     protected function getDirtyAttributes(): array
     {
         $dirty = [];
-        
+
         foreach ($this->attributes as $key => $value) {
             if (!array_key_exists($key, $this->original) || $this->original[$key] !== $value) {
                 if ($key !== $this->primaryKey) { // Don't update primary key
@@ -329,7 +329,7 @@ abstract class Record
     protected function getAttributesForInsert(): array
     {
         $attributes = [];
-        
+
         foreach ($this->attributes as $key => $value) {
             if ($this->isFillable($key) && $key !== $this->primaryKey) {
                 $attributes[$key] = $value;
@@ -408,7 +408,7 @@ abstract class Record
     protected function getDefaultTableName(): string
     {
         $className = class_basename(static::class);
-        
+
         // Remove "Record" suffix if present
         if (str_ends_with($className, 'Record')) {
             $className = substr($className, 0, -6);

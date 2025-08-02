@@ -86,4 +86,14 @@ class Cache
     {
         return self::getManager()->forgetMany($keys);
     }
+
+    public static function tags(array $tags): TaggedCache
+    {
+        return new TaggedCache(self::getManager()->store(), $tags);
+    }
+
+    public static function lock(string $key, int $timeout = 10): CacheLock
+    {
+        return new CacheLock(self::getManager()->store(), $key, $timeout);
+    }
 }

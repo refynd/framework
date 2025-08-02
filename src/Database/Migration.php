@@ -6,7 +6,7 @@ use RuntimeException;
 
 /**
  * Migration - Base class for database migrations
- * 
+ *
  * Provides structure for creating and managing database schema changes.
  */
 abstract class Migration

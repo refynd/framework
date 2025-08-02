@@ -10,5 +10,6 @@ class Listener
     public function __construct(
         public string $event,
         public int $priority = 0
-    ) {}
+    ) {
+    }
 }

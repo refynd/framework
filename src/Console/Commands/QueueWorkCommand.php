@@ -31,23 +31,23 @@ class QueueWorkCommand extends Command
     {
         $queueName = $input->getOption('queue');
         $sleep = (int) $input->getOption('sleep');
-        
-        $output->writeln("<info>Starting queue worker for queue: {$queueName}</info>");
-        $output->writeln("<comment>Press Ctrl+C to stop</comment>");
-        
+
+        $output->writeln("<info > Starting queue worker for queue: {$queueName}</info>");
+        $output->writeln("<comment > Press Ctrl+C to stop</comment>");
+
         $worker = $this->container->make(QueueWorker::class);
-        
+
         // Handle graceful shutdown
-        pcntl_signal(SIGTERM, function() use ($worker) {
+        pcntl_signal(SIGTERM, function () use ($worker) {
             $worker->stop();
         });
-        pcntl_signal(SIGINT, function() use ($worker) {
+        pcntl_signal(SIGINT, function () use ($worker) {
             $worker->stop();
         });
-        
+
         $worker->work($queueName, $sleep);
-        
-        $output->writeln('<info>Queue worker stopped</info>');
+
+        $output->writeln('<info > Queue worker stopped</info>');
         return Command::SUCCESS;
     }
 }

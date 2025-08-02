@@ -4,7 +4,7 @@ namespace Refynd\Hash;
 
 /**
  * HashInterface - Defines the contract for hashing implementations
- * 
+ *
  * Provides a consistent interface for password hashing and verification
  * across different hashing algorithms and drivers.
  */

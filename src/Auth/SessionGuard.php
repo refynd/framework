@@ -4,7 +4,7 @@ namespace Refynd\Auth;
 
 /**
  * SessionGuard - Session-based authentication guard
- * 
+ *
  * Handles authentication using sessions and cookies.
  * Supports "remember me" functionality and user persistence.
  */

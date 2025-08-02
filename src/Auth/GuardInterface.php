@@ -4,7 +4,7 @@ namespace Refynd\Auth;
 
 /**
  * GuardInterface - Contract for authentication guards
- * 
+ *
  * Guards handle the authentication logic for different contexts
  * (web, API, session-based, token-based, etc.)
  */

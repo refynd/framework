@@ -4,7 +4,7 @@ namespace Refynd\Auth;
 
 /**
  * AuthenticatableTrait - Default implementation for authenticatable entities
- * 
+ *
  * Provides default implementations of the AuthenticatableInterface methods
  * that can be used by user models.
  */

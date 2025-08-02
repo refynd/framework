@@ -13,7 +13,7 @@ class ValidationModule extends Module
             $data = $parameters['data'] ?? [];
             $rules = $parameters['rules'] ?? [];
             $messages = $parameters['messages'] ?? [];
-            
+
             return new Validator($data, $rules, $messages);
         });
     }

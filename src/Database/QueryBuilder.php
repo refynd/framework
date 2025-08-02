@@ -4,7 +4,7 @@ namespace Refynd\Database;
 
 /**
  * QueryBuilder - Fluent Query Builder for Ledger ORM
- * 
+ *
  * Provides an expressive, fluent interface for building database queries.
  */
 class QueryBuilder
@@ -46,13 +46,11 @@ class QueryBuilder
             $operator = '=';
         }
 
-        $this->where[] = [
-            'type' => 'where',
+        $this->where[] = ['type' => 'where',
             'column' => $column,
             'operator' => $operator,
             'value' => $value,
-            'boolean' => 'and'
-        ];
+            'boolean' => 'and'];
 
         return $this;
     }
@@ -67,13 +65,11 @@ class QueryBuilder
             $operator = '=';
         }
 
-        $this->where[] = [
-            'type' => 'where',
+        $this->where[] = ['type' => 'where',
             'column' => $column,
             'operator' => $operator,
             'value' => $value,
-            'boolean' => 'or'
-        ];
+            'boolean' => 'or'];
 
         return $this;
     }
@@ -83,12 +79,10 @@ class QueryBuilder
      */
     public function whereIn(string $column, array $values): self
     {
-        $this->where[] = [
-            'type' => 'wherein',
+        $this->where[] = ['type' => 'wherein',
             'column' => $column,
             'values' => $values,
-            'boolean' => 'and'
-        ];
+            'boolean' => 'and'];
 
         return $this;
     }
@@ -98,11 +92,9 @@ class QueryBuilder
      */
     public function whereNull(string $column): self
     {
-        $this->where[] = [
-            'type' => 'null',
+        $this->where[] = ['type' => 'null',
             'column' => $column,
-            'boolean' => 'and'
-        ];
+            'boolean' => 'and'];
 
         return $this;
     }
@@ -112,11 +104,9 @@ class QueryBuilder
      */
     public function whereNotNull(string $column): self
     {
-        $this->where[] = [
-            'type' => 'notnull',
+        $this->where[] = ['type' => 'notnull',
             'column' => $column,
-            'boolean' => 'and'
-        ];
+            'boolean' => 'and'];
 
         return $this;
     }
@@ -126,13 +116,11 @@ class QueryBuilder
      */
     public function join(string $table, string $first, string $operator, string $second): self
     {
-        $this->joins[] = [
-            'type' => 'inner',
+        $this->joins[] = ['type' => 'inner',
             'table' => $table,
             'first' => $first,
             'operator' => $operator,
-            'second' => $second
-        ];
+            'second' => $second];
 
         return $this;
     }
@@ -142,13 +130,11 @@ class QueryBuilder
      */
     public function leftJoin(string $table, string $first, string $operator, string $second): self
     {
-        $this->joins[] = [
-            'type' => 'left',
+        $this->joins[] = ['type' => 'left',
             'table' => $table,
             'first' => $first,
             'operator' => $operator,
-            'second' => $second
-        ];
+            'second' => $second];
 
         return $this;
     }
@@ -158,10 +144,8 @@ class QueryBuilder
      */
     public function orderBy(string $column, string $direction = 'asc'): self
     {
-        $this->orderBy[] = [
-            'column' => $column,
-            'direction' => strtolower($direction)
-        ];
+        $this->orderBy[] = ['column' => $column,
+            'direction' => strtolower($direction)];
 
         return $this;
     }
@@ -195,29 +179,29 @@ class QueryBuilder
 
     /**
      * Execute the query and return all results
-     * @return array|Collection<int, Model>
+     * @return array|Collection < int, Model>
      */
     public function get(): array|Collection
     {
         $sql = $this->toSql();
         $results = Ledger::select($sql, $this->bindings);
-        
+
         if ($this->model) {
             $models = [];
             foreach ($results as $result) {
                 $models[] = $this->model->newFromDatabase($result);
             }
-            
+
             $collection = new Collection($models);
-            
+
             // Handle eager loading
             if (!empty($this->eagerLoad)) {
                 $collection = $this->loadRelations($collection);
             }
-            
+
             return $collection;
         }
-        
+
         return $results;
     }
 
@@ -228,11 +212,11 @@ class QueryBuilder
     {
         $this->limit(1);
         $results = $this->get();
-        
+
         if ($results instanceof Collection) {
             return $results->first();
         }
-        
+
         return $results[0] ?? null;
     }
 
@@ -256,15 +240,15 @@ class QueryBuilder
 
     /**
      * Load relationships for the collection
-     * @param Collection<int, Model> $collection
-     * @return Collection<int, Model>
+     * @param Collection < int, Model> $collection
+     * @return Collection < int, Model>
      */
     protected function loadRelations(Collection $collection): Collection
     {
         foreach ($this->eagerLoad as $relation) {
             if (method_exists($this->model, $relation)) {
                 $relationInstance = $this->model->$relation();
-                
+
                 if ($relationInstance instanceof Relations\Relation) {
                     $models = $collection->all();
                     $relationInstance->addEagerConstraints($models);
@@ -275,7 +259,7 @@ class QueryBuilder
                 }
             }
         }
-        
+
         return $collection;
     }
 
@@ -286,10 +270,10 @@ class QueryBuilder
     {
         $originalSelect = $this->select;
         $this->select = ['COUNT(*) as count'];
-        
+
         $result = $this->first();
         $this->select = $originalSelect;
-        
+
         return (int) ($result['count'] ?? 0);
     }
 

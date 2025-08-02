@@ -40,7 +40,7 @@ class ThrottleMiddleware
         }
 
         $response = $next($request);
-        
+
         $key = $this->rateLimiter->getRequestKey($ip, $route, $userId);
         $headers = $this->rateLimiter->getHeaders($key, $maxAttempts, $decayMinutes * 60);
 
@@ -53,26 +53,24 @@ class ThrottleMiddleware
     protected function getClientIp(object $request): string
     {
         // Try to get real IP from common proxy headers
-        $headers = [
-            'HTTP_CF_CONNECTING_IP',     // Cloudflare
+        $headers = ['HTTP_CF_CONNECTING_IP',     // Cloudflare
             'HTTP_CLIENT_IP',            // Proxy
             'HTTP_X_FORWARDED_FOR',      // Load balancer/proxy
             'HTTP_X_FORWARDED',          // Proxy
             'HTTP_X_CLUSTER_CLIENT_IP',  // Cluster
             'HTTP_FORWARDED_FOR',        // Proxy
             'HTTP_FORWARDED',            // Proxy
-            'REMOTE_ADDR'                // Standard
-        ];
+            'REMOTE_ADDR'                // Standard];
 
         foreach ($headers as $header) {
             if (!empty($_SERVER[$header])) {
                 $ip = $_SERVER[$header];
-                
+
                 // Handle comma-separated IPs (X-Forwarded-For)
-                if (str_contains($ip, ',')) {
-                    $ip = trim(explode(',', $ip)[0]);
+                if (str_contains($ip, ', ')) {
+                    $ip = trim(explode(', ', $ip)[0]);
                 }
-                
+
                 // Validate IP
                 if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_NO_PRIV_RANGE | FILTER_FLAG_NO_RES_RANGE)) {
                     return $ip;
@@ -109,22 +107,16 @@ class ThrottleMiddleware
     protected function buildTooManyAttemptsResponse(RateLimitExceededException $e): array
     {
         $limitInfo = $e->getLimitInfo();
-        
-        return [
-            'status' => 429,
-            'headers' => [
-                'Retry-After' => $e->getRetryAfter(),
+
+        return ['status' => 429,
+            'headers' => ['Retry-After' => $e->getRetryAfter(),
                 'X-RateLimit-Limit' => $limitInfo['max_attempts'],
                 'X-RateLimit-Remaining' => 0,
-                'X-RateLimit-Reset' => $limitInfo['reset_time'],
-            ],
-            'body' => [
-                'error' => 'Too Many Attempts',
+                'X-RateLimit-Reset' => $limitInfo['reset_time'],],
+            'body' => ['error' => 'Too Many Attempts',
                 'message' => $e->getMessage(),
                 'retry_after' => $e->getRetryAfter(),
-                'limit_info' => $limitInfo,
-            ]
-        ];
+                'limit_info' => $limitInfo,]];
     }
 
     /**
@@ -145,7 +137,7 @@ class ThrottleMiddleware
      */
     public static function perMinute(int $maxAttempts): string
     {
-        return static::class . ':' . $maxAttempts . ',1';
+        return static::class . ':' . $maxAttempts . ', 1';
     }
 
     /**
@@ -153,7 +145,7 @@ class ThrottleMiddleware
      */
     public static function perHour(int $maxAttempts): string
     {
-        return static::class . ':' . $maxAttempts . ',60';
+        return static::class . ':' . $maxAttempts . ', 60';
     }
 
     /**
@@ -161,6 +153,6 @@ class ThrottleMiddleware
      */
     public static function perDay(int $maxAttempts): string
     {
-        return static::class . ':' . $maxAttempts . ',1440';
+        return static::class . ':' . $maxAttempts . ', 1440';
     }
 }

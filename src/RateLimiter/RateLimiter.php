@@ -30,7 +30,7 @@ class RateLimiter implements RateLimiterInterface
     public function hit(string $key, int $decaySeconds = 60): int
     {
         $key = $this->resolveRequestSignature($key);
-        
+
         $this->cache->put(
             $key . ':timer',
             $this->availableAt($decaySeconds),
@@ -98,9 +98,8 @@ class RateLimiter implements RateLimiterInterface
         $attempts = $this->attempts($key);
         $remaining = max(0, $maxAttempts - $attempts);
         $availableIn = $this->availableIn($key);
-        
-        return [
-            'key' => $key,
+
+        return ['key' => $key,
             'attempts' => $attempts,
             'max_attempts' => $maxAttempts,
             'remaining' => $remaining,
@@ -108,8 +107,7 @@ class RateLimiter implements RateLimiterInterface
             'available_at' => $availableIn > 0 ? $this->currentTime() + $availableIn : null,
             'is_limited' => $attempts >= $maxAttempts,
             'decay_seconds' => $decaySeconds,
-            'reset_time' => $this->currentTime() + $decaySeconds,
-        ];
+            'reset_time' => $this->currentTime() + $decaySeconds,];
     }
 
     /**
@@ -163,11 +161,9 @@ class RateLimiter implements RateLimiterInterface
      */
     public function getStatistics(): array
     {
-        return [
-            'cache_driver' => get_class($this->cache),
+        return ['cache_driver' => get_class($this->cache),
             'key_prefix' => $this->keyPrefix,
-            'current_time' => $this->currentTime(),
-        ];
+            'current_time' => $this->currentTime(),];
     }
 
     /**

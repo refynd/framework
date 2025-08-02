@@ -6,7 +6,7 @@ use RuntimeException;
 
 /**
  * Schema - Fluent schema builder for database operations
- * 
+ *
  * Provides an expressive interface for creating, modifying,
  * and dropping database tables and columns.
  */
@@ -19,7 +19,7 @@ class Schema
     {
         $blueprint = new Blueprint($table);
         $callback($blueprint);
-        
+
         $sql = $blueprint->toSql();
         static::getPdo()->exec($sql);
     }
@@ -32,7 +32,7 @@ class Schema
         $blueprint = new Blueprint($table);
         $blueprint->setModifying(true);
         $callback($blueprint);
-        
+
         $statements = $blueprint->toSqlStatements();
         foreach ($statements as $statement) {
             static::getPdo()->exec($statement);
@@ -73,7 +73,7 @@ class Schema
     {
         $sql = "SHOW TABLES LIKE :table";
         $result = Ledger::select($sql, [':table' => $table]);
-        
+
         return !empty($result);
     }
 
@@ -84,7 +84,7 @@ class Schema
     {
         $sql = "SHOW COLUMNS FROM {$table} LIKE :column";
         $result = Ledger::select($sql, [':column' => $column]);
-        
+
         return !empty($result);
     }
 

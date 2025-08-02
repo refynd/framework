@@ -8,7 +8,7 @@ use Refynd\Database\Ledger;
 
 /**
  * BelongsToMany - Many-to-many relationship
- * 
+ *
  * Represents a many-to-many relationship where models are related
  * through a pivot table.
  */
@@ -27,7 +27,7 @@ class BelongsToMany extends Relation
         $this->relatedPivotKey = $relatedPivotKey;
         $this->parentKey = $parent->getKeyName();
         $this->relatedKey = $related->getKeyName();
-        
+
         parent::__construct($parent, $related);
     }
 
@@ -37,9 +37,9 @@ class BelongsToMany extends Relation
     public function addConstraints(): void
     {
         $this->query->join(
-            $this->table, 
-            $this->related->getTable() . '.' . $this->relatedKey, 
-            '=', 
+            $this->table,
+            $this->related->getTable() . '.' . $this->relatedKey,
+            '=',
             $this->table . '.' . $this->relatedPivotKey
         );
 
@@ -74,7 +74,7 @@ class BelongsToMany extends Relation
 
     /**
      * Match the eagerly loaded results to their parents
-     * @param Collection<int, Model> $results
+     * @param Collection < int, Model> $results
      */
     public function match(array $models, Collection $results, string $relation): array
     {
@@ -82,7 +82,7 @@ class BelongsToMany extends Relation
 
         foreach ($models as $model) {
             $key = $model->getKey();
-            
+
             if (isset($dictionary[$key])) {
                 $model->setRelation($relation, new Collection($dictionary[$key]));
             }
@@ -93,7 +93,7 @@ class BelongsToMany extends Relation
 
     /**
      * Get the results of the relationship
-     * @return Collection<int, Model>
+     * @return Collection < int, Model>
      */
     public function getResults(): Collection
     {
@@ -110,10 +110,8 @@ class BelongsToMany extends Relation
         }
 
         foreach ($ids as $id) {
-            $pivotData = array_merge([
-                $this->foreignPivotKey => $this->parent->getKey(),
-                $this->relatedPivotKey => $id,
-            ], $attributes);
+            $pivotData = array_merge([$this->foreignPivotKey => $this->parent->getKey(),
+                $this->relatedPivotKey => $id,], $attributes);
 
             $this->insertPivot($pivotData);
         }
@@ -152,25 +150,23 @@ class BelongsToMany extends Relation
     {
         // Get current IDs
         $current = $this->getCurrentIds();
-        
+
         // Determine what to attach and detach
         $toAttach = array_diff($ids, $current);
         $toDetach = array_diff($current, $ids);
-        
+
         // Perform operations
         if (!empty($toDetach)) {
             $this->detach($toDetach);
         }
-        
+
         if (!empty($toAttach)) {
             $this->attach($toAttach);
         }
 
-        return [
-            'attached' => $toAttach,
+        return ['attached' => $toAttach,
             'detached' => $toDetach,
-            'updated' => [],
-        ];
+            'updated' => [],];
     }
 
     /**
@@ -180,7 +176,7 @@ class BelongsToMany extends Relation
     {
         $sql = "SELECT {$this->relatedPivotKey} FROM {$this->table} WHERE {$this->foreignPivotKey} = :parent_key";
         $results = Ledger::select($sql, [':parent_key' => $this->parent->getKey()]);
-        
+
         return array_column($results, $this->relatedPivotKey);
     }
 
@@ -190,10 +186,10 @@ class BelongsToMany extends Relation
     protected function insertPivot(array $attributes): void
     {
         $columns = array_keys($attributes);
-        $placeholders = array_map(fn($col) => ':' . $col, $columns);
-        
+        $placeholders = array_map(fn ($col) => ':' . $col, $columns);
+
         $sql = "INSERT INTO {$this->table} (" . implode(', ', $columns) . ") VALUES (" . implode(', ', $placeholders) . ")";
-        
+
         $bindings = [];
         foreach ($attributes as $key => $value) {
             $bindings[':' . $key] = $value;
@@ -204,7 +200,7 @@ class BelongsToMany extends Relation
 
     /**
      * Build the model dictionary for matching
-     * @param Collection<int, Model> $results
+     * @param Collection < int, Model> $results
      */
     protected function buildDictionary(Collection $results): array
     {
@@ -215,11 +211,11 @@ class BelongsToMany extends Relation
             // This is complex and would need pivot data in the result
             // For now, we'll use a simplified approach
             $key = $result->getAttribute($this->foreignPivotKey);
-            
+
             if (!isset($dictionary[$key])) {
                 $dictionary[$key] = [];
             }
-            
+
             $dictionary[$key][] = $result;
         }
 

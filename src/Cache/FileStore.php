@@ -9,7 +9,7 @@ class FileStore implements CacheInterface
     public function __construct(array $config)
     {
         $this->path = $config['path'] ?? sys_get_temp_dir() . '/refynd_cache';
-        
+
         if (!is_dir($this->path)) {
             mkdir($this->path, 0755, true);
         }
@@ -18,7 +18,7 @@ class FileStore implements CacheInterface
     public function get(string $key, mixed $default = null): mixed
     {
         $file = $this->getFilePath($key);
-        
+
         if (!file_exists($file)) {
             return $default;
         }
@@ -38,11 +38,9 @@ class FileStore implements CacheInterface
     {
         $file = $this->getFilePath($key);
         $expires = $ttl > 0 ? time() + $ttl : null;
-        
-        $data = [
-            'value' => $value,
-            'expires' => $expires,
-        ];
+
+        $data = ['value' => $value,
+            'expires' => $expires,];
 
         return file_put_contents($file, serialize($data)) !== false;
     }
@@ -50,38 +48,38 @@ class FileStore implements CacheInterface
     public function forget(string $key): bool
     {
         $file = $this->getFilePath($key);
-        
+
         if (file_exists($file)) {
             return unlink($file);
         }
-        
+
         return true;
     }
 
     public function flush(): bool
     {
         $files = glob($this->path . '/*');
-        
+
         foreach ($files as $file) {
             if (is_file($file)) {
                 unlink($file);
             }
         }
-        
+
         return true;
     }
 
     public function increment(string $key, int $value = 1): int|bool
     {
         $current = $this->get($key, 0);
-        
+
         if (!is_numeric($current)) {
             return false;
         }
-        
+
         $new = $current + $value;
         $this->put($key, $new);
-        
+
         return $new;
     }
 
@@ -98,28 +96,28 @@ class FileStore implements CacheInterface
     public function remember(string $key, int $ttl, callable $callback): mixed
     {
         $value = $this->get($key);
-        
+
         if ($value !== null) {
             return $value;
         }
-        
+
         $value = $callback();
         $this->put($key, $value, $ttl);
-        
+
         return $value;
     }
 
     public function rememberForever(string $key, callable $callback): mixed
     {
         $value = $this->get($key);
-        
+
         if ($value !== null) {
             return $value;
         }
-        
+
         $value = $callback();
         $this->forever($key, $value);
-        
+
         return $value;
     }
 
@@ -131,11 +129,11 @@ class FileStore implements CacheInterface
     public function many(array $keys): array
     {
         $result = [];
-        
+
         foreach ($keys as $key) {
             $result[$key] = $this->get($key);
         }
-        
+
         return $result;
     }
 
@@ -146,7 +144,7 @@ class FileStore implements CacheInterface
                 return false;
             }
         }
-        
+
         return true;
     }
 
@@ -157,7 +155,7 @@ class FileStore implements CacheInterface
                 return false;
             }
         }
-        
+
         return true;
     }
 

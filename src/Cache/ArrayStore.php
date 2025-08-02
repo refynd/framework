@@ -32,11 +32,9 @@ class ArrayStore implements CacheInterface
     public function put(string $key, mixed $value, int $ttl = 3600): bool
     {
         $expires = $ttl > 0 ? time() + $ttl : null;
-        
-        $this->storage[$key] = [
-            'value' => $value,
-            'expires' => $expires,
-        ];
+
+        $this->storage[$key] = ['value' => $value,
+            'expires' => $expires,];
 
         return true;
     }
@@ -56,14 +54,14 @@ class ArrayStore implements CacheInterface
     public function increment(string $key, int $value = 1): int|bool
     {
         $current = $this->get($key, 0);
-        
+
         if (!is_numeric($current)) {
             return false;
         }
-        
+
         $new = $current + $value;
         $this->put($key, $new);
-        
+
         return $new;
     }
 
@@ -80,28 +78,28 @@ class ArrayStore implements CacheInterface
     public function remember(string $key, int $ttl, callable $callback): mixed
     {
         $value = $this->get($key);
-        
+
         if ($value !== null) {
             return $value;
         }
-        
+
         $value = $callback();
         $this->put($key, $value, $ttl);
-        
+
         return $value;
     }
 
     public function rememberForever(string $key, callable $callback): mixed
     {
         $value = $this->get($key);
-        
+
         if ($value !== null) {
             return $value;
         }
-        
+
         $value = $callback();
         $this->forever($key, $value);
-        
+
         return $value;
     }
 
@@ -113,11 +111,11 @@ class ArrayStore implements CacheInterface
     public function many(array $keys): array
     {
         $result = [];
-        
+
         foreach ($keys as $key) {
             $result[$key] = $this->get($key);
         }
-        
+
         return $result;
     }
 
@@ -126,7 +124,7 @@ class ArrayStore implements CacheInterface
         foreach ($values as $key => $value) {
             $this->put($key, $value, $ttl);
         }
-        
+
         return true;
     }
 
@@ -135,7 +133,7 @@ class ArrayStore implements CacheInterface
         foreach ($keys as $key) {
             $this->forget($key);
         }
-        
+
         return true;
     }
 }

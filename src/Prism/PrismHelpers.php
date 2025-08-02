@@ -4,7 +4,7 @@ namespace Refynd\Prism;
 
 /**
  * PrismHelpers - Global Helper Functions for Prism Templates
- * 
+ *
  * Provides convenient functions for common template operations.
  */
 
@@ -15,22 +15,20 @@ if (!function_exists('prism')) {
     function prism(): PrismEngine
     {
         static $engine = null;
-        
+
         if ($engine === null) {
             $viewPath = getcwd() . '/views';
             $cachePath = getcwd() . '/storage/cache/views';
             $debugMode = defined('PRISM_DEBUG') ? constant('PRISM_DEBUG') : false;
-            
+
             $engine = new PrismEngine($viewPath, $cachePath, $debugMode);
-            
+
             // Register common helpers
-            $engine->addGlobals([
-                'app_name' => $_ENV['APP_NAME'] ?? 'Refynd App',
+            $engine->addGlobals(['app_name' => $_ENV['APP_NAME'] ?? 'Refynd App',
                 'app_version' => $_ENV['APP_VERSION'] ?? '1.0.0',
                 'current_year' => date('Y'),
                 'current_date' => date('Y-m-d'),
-                'current_time' => time(),
-            ]);
+                'current_time' => time(),]);
         }
 
         return $engine;
@@ -77,7 +75,7 @@ if (!function_exists('csrf_token')) {
         if (!isset($_SESSION['_token'])) {
             $_SESSION['_token'] = bin2hex(random_bytes(32));
         }
-        
+
         return $_SESSION['_token'];
     }
 }
@@ -118,25 +116,26 @@ if (!function_exists('auth')) {
      */
     function auth(): object
     {
-        return new class {
-            public function check(): bool {
+        return new class () {
+            public function check(): bool
+            {
                 return isset($_SESSION['user_id']);
             }
-            
-            public function guest(): bool {
+
+            public function guest(): bool
+            {
                 return !$this->check();
             }
-            
-            public function user(): ?object {
+
+            public function user(): ?object
+            {
                 if (!$this->check()) {
                     return null;
                 }
-                
-                return (object) [
-                    'id' => $_SESSION['user_id'] ?? null,
+
+                return (object) ['id' => $_SESSION['user_id'] ?? null,
                     'name' => $_SESSION['user_name'] ?? 'Anonymous',
-                    'email' => $_SESSION['user_email'] ?? '',
-                ];
+                    'email' => $_SESSION['user_email'] ?? '',];
             }
         };
     }
@@ -159,16 +158,14 @@ if (!function_exists('config')) {
     function config(string $key, mixed $default = null): mixed
     {
         static $config = null;
-        
+
         if ($config === null) {
-            $config = [
-                'app.name' => $_ENV['APP_NAME'] ?? 'Refynd',
+            $config = ['app.name' => $_ENV['APP_NAME'] ?? 'Refynd',
                 'app.version' => $_ENV['APP_VERSION'] ?? '1.0.0',
                 'app.debug' => $_ENV['APP_DEBUG'] ?? false,
-                'cache.default' => $_ENV['CACHE_DRIVER'] ?? 'file',
-            ];
+                'cache.default' => $_ENV['CACHE_DRIVER'] ?? 'file',];
         }
-        
+
         return $config[$key] ?? $default;
     }
 }

@@ -8,7 +8,7 @@ use RuntimeException;
 
 /**
  * Ledger - Central ORM Manager
- * 
+ *
  * Manages database connections and provides the foundation
  * for Record models and query operations.
  */
@@ -55,11 +55,9 @@ class Ledger
                 $dsn,
                 $config['username'] ?? '',
                 $config['password'] ?? '',
-                [
-                    PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+                [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
-                    PDO::ATTR_EMULATE_PREPARES => false,
-                ]
+                    PDO::ATTR_EMULATE_PREPARES => false,]
             );
         } catch (PDOException $e) {
             throw new RuntimeException("Database connection failed: " . $e->getMessage());
@@ -78,7 +76,7 @@ class Ledger
 
         switch ($driver) {
             case 'mysql':
-                return "mysql:host={$host};port={$port};dbname={$database};charset=utf8mb4";
+                return "mysql:host={$host};port={$port};dbname={$database};charset = utf8mb4";
             case 'pgsql':
                 return "pgsql:host={$host};port={$port};dbname={$database}";
             case 'sqlite':

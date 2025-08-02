@@ -33,16 +33,16 @@ class EventDispatcher
     public function subscribe(string $subscriber): void
     {
         $subscriberInstance = $this->container->make($subscriber);
-        
+
         $reflection = new ReflectionClass($subscriberInstance);
-        
+
         foreach ($reflection->getMethods(ReflectionMethod::IS_PUBLIC) as $method) {
             $attributes = $method->getAttributes(Listener::class);
-            
+
             foreach ($attributes as $attribute) {
                 $listenerConfig = $attribute->newInstance();
                 $eventClass = $listenerConfig->event;
-                
+
                 $this->listen($eventClass, [$subscriberInstance, $method->getName()]);
             }
         }
@@ -58,7 +58,7 @@ class EventDispatcher
         // Get direct listeners
         foreach ($this->getListeners($eventName) as $listener) {
             $response = $this->callListener($listener, $eventData);
-            
+
             if ($response !== null) {
                 $responses[] = $response;
             }
@@ -69,7 +69,7 @@ class EventDispatcher
             if ($this->eventMatches($pattern, $eventName)) {
                 foreach ($listeners as $listener) {
                     $response = $this->callListener($listener, $eventData);
-                    
+
                     if ($response !== null) {
                         $responses[] = $response;
                     }
@@ -92,7 +92,7 @@ class EventDispatcher
 
         foreach ($this->getListeners($eventName) as $listener) {
             $response = $this->callListener($listener, $eventData);
-            
+
             if ($response !== null) {
                 return $response;
             }
@@ -110,7 +110,7 @@ class EventDispatcher
     {
         foreach ($this->queuedEvents as $index => $queuedEvent) {
             [$queuedEventName, $payload] = $queuedEvent;
-            
+
             if ($queuedEventName === $event) {
                 $this->dispatch($event, $payload);
                 unset($this->queuedEvents[$index]);
@@ -121,7 +121,7 @@ class EventDispatcher
     public function forget(string $event): void
     {
         unset($this->listeners[$event]);
-        
+
         foreach ($this->wildcards as $pattern => $listeners) {
             if ($this->eventMatches($pattern, $event)) {
                 unset($this->wildcards[$pattern]);
@@ -146,17 +146,17 @@ class EventDispatcher
         }
 
         if (is_string($listener)) {
-            return fn($event) => $this->container->call($listener, ['event' => $event]);
+            return fn ($event) => $this->container->call($listener, ['event' => $event]);
         }
 
         // Must be array based on type union
         [$class, $method] = $listener;
-        
+
         return function ($event) use ($class, $method) {
             if (is_string($class)) {
                 $class = $this->container->make($class);
             }
-            
+
             return $this->container->call([$class, $method], ['event' => $event]);
         };
     }
@@ -181,7 +181,7 @@ class EventDispatcher
         // Convert wildcard pattern to regex
         $regex = preg_quote($pattern, '/');
         $regex = str_replace('\*', '.*', $regex);
-        
+
         return (bool) preg_match("/^{$regex}$/", $eventName);
     }
 
@@ -204,13 +204,13 @@ class EventDispatcher
     public function getListenerCount(string $event): int
     {
         $count = count($this->getListeners($event));
-        
+
         foreach ($this->wildcards as $pattern => $listeners) {
             if ($this->eventMatches($pattern, $event)) {
                 $count += count($listeners);
             }
         }
-        
+
         return $count;
     }
 }

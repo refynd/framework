@@ -7,7 +7,7 @@ use Exception;
 
 /**
  * MigrationRunner - Executes database migrations
- * 
+ *
  * Handles running and rolling back migrations with proper
  * tracking and error handling.
  */
@@ -34,7 +34,7 @@ class MigrationRunner
             migration VARCHAR(255) NOT NULL,
             batch INT NOT NULL,
             executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+        ) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci";
 
         $this->pdo->exec($sql);
     }
@@ -45,7 +45,7 @@ class MigrationRunner
     public function migrate(): array
     {
         $pendingMigrations = $this->getPendingMigrations();
-        
+
         if (empty($pendingMigrations)) {
             return ['message' => 'No pending migrations'];
         }
@@ -64,10 +64,8 @@ class MigrationRunner
             }
         }
 
-        return [
-            'executed' => $executed,
-            'batch' => $batch
-        ];
+        return ['executed' => $executed,
+            'batch' => $batch];
     }
 
     /**
@@ -76,7 +74,7 @@ class MigrationRunner
     public function rollback(): array
     {
         $lastBatch = $this->getLastBatch();
-        
+
         if (!$lastBatch) {
             return ['message' => 'Nothing to rollback'];
         }
@@ -97,10 +95,8 @@ class MigrationRunner
             }
         }
 
-        return [
-            'rolled_back' => $rolledBack,
-            'batch' => $lastBatch
-        ];
+        return ['rolled_back' => $rolledBack,
+            'batch' => $lastBatch];
     }
 
     /**
@@ -181,7 +177,7 @@ class MigrationRunner
     protected function runMigration(string $migration, int $batch): void
     {
         $migrationInstance = $this->loadMigration($migration);
-        
+
         if (!$migrationInstance) {
             throw new Exception("Migration class not found for: {$migration}");
         }
@@ -205,7 +201,7 @@ class MigrationRunner
     protected function rollbackMigration(string $migration): void
     {
         $migrationInstance = $this->loadMigration($migration);
-        
+
         if (!$migrationInstance) {
             throw new Exception("Migration class not found for: {$migration}");
         }
@@ -228,7 +224,7 @@ class MigrationRunner
     protected function loadMigration(string $migration): ?Migration
     {
         $filePath = $this->migrationsPath . '/' . $migration . '.php';
-        
+
         if (!file_exists($filePath)) {
             return null;
         }
@@ -238,7 +234,7 @@ class MigrationRunner
         // Extract class name from filename (assuming pattern: YYYY_MM_DD_HHMMSS_migration_name)
         $parts = explode('_', $migration);
         $className = '';
-        
+
         // Skip timestamp parts and build class name
         for ($i = 4; $i < count($parts); $i++) {
             $className .= ucfirst($parts[$i]);
@@ -276,13 +272,11 @@ class MigrationRunner
     {
         $allMigrations = $this->getAllMigrationFiles();
         $executedMigrations = $this->getExecutedMigrations();
-        
+
         $status = [];
         foreach ($allMigrations as $migration) {
-            $status[] = [
-                'migration' => $migration,
-                'status' => in_array($migration, $executedMigrations) ? 'executed' : 'pending'
-            ];
+            $status[] = ['migration' => $migration,
+                'status' => in_array($migration, $executedMigrations) ? 'executed' : 'pending'];
         }
 
         return $status;

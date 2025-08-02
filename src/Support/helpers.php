@@ -21,11 +21,11 @@ if (!function_exists('env')) {
     function env(string $key, $default = null)
     {
         $value = $_ENV[$key] ?? $_SERVER[$key] ?? getenv($key);
-        
+
         if ($value === false) {
             return $default;
         }
-        
+
         // Handle special boolean cases
         switch (strtolower($value)) {
             case 'true':
@@ -41,7 +41,7 @@ if (!function_exists('env')) {
             case '(empty)':
                 return '';
         }
-        
+
         return $value;
     }
 }
@@ -56,7 +56,7 @@ if (!function_exists('class_basename')) {
     function class_basename($class): string
     {
         $class = is_object($class) ? get_class($class) : $class;
-        
+
         return basename(str_replace('\\', '/', $class));
     }
 }

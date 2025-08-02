@@ -12,7 +12,7 @@ use Closure;
 
 /**
  * AuthMiddleware - Protects routes requiring authentication
- * 
+ *
  * Ensures that only authenticated users can access protected routes.
  * Redirects guests to login or returns 401 for API requests.
  */
@@ -58,8 +58,8 @@ class AuthMiddleware implements MiddlewareInterface
     {
         $accept = $request->headers->get('Accept', '');
         $contentType = $request->headers->get('Content-Type', '');
-        
-        return str_contains($accept, 'application/json') || 
+
+        return str_contains($accept, 'application/json') ||
                str_contains($contentType, 'application/json') ||
                $request->isXmlHttpRequest();
     }
@@ -70,7 +70,7 @@ class AuthMiddleware implements MiddlewareInterface
     protected function redirectTo(Request $request): RedirectResponse
     {
         $location = $this->redirectTo . '?redirect=' . urlencode($request->getPathInfo());
-        
+
         return new RedirectResponse($location);
     }
 

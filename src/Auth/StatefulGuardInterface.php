@@ -4,7 +4,7 @@ namespace Refynd\Auth;
 
 /**
  * StatefulGuardInterface - Contract for stateful authentication guards
- * 
+ *
  * Extends the basic guard with login/logout capabilities
  */
 interface StatefulGuardInterface extends GuardInterface

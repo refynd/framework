@@ -7,7 +7,7 @@ use Refynd\Database\Collection;
 
 /**
  * HasOne - One-to-one relationship
- * 
+ *
  * Represents a one-to-one relationship where the parent model
  * has one related model.
  */
@@ -20,7 +20,7 @@ class HasOne extends Relation
     {
         $this->foreignKey = $foreignKey;
         $this->localKey = $localKey;
-        
+
         parent::__construct($parent, $related);
     }
 
@@ -60,7 +60,7 @@ class HasOne extends Relation
 
     /**
      * Match the eagerly loaded results to their parents
-     * @param Collection<int, Model> $results
+     * @param Collection < int, Model> $results
      */
     public function match(array $models, Collection $results, string $relation): array
     {
@@ -68,7 +68,7 @@ class HasOne extends Relation
 
         foreach ($models as $model) {
             $key = $model->getAttribute($this->localKey);
-            
+
             if (isset($dictionary[$key])) {
                 $model->setRelation($relation, $dictionary[$key]);
             }
@@ -91,7 +91,7 @@ class HasOne extends Relation
     public function create(array $attributes = []): Model
     {
         $attributes[$this->foreignKey] = $this->parent->getAttribute($this->localKey);
-        
+
         return $this->related::create($attributes);
     }
 
@@ -101,13 +101,13 @@ class HasOne extends Relation
     public function save(Model $model): bool
     {
         $model->setAttribute($this->foreignKey, $this->parent->getAttribute($this->localKey));
-        
+
         return $model->save();
     }
 
     /**
      * Build the model dictionary for matching
-     * @param Collection<int, Model> $results
+     * @param Collection < int, Model> $results
      */
     protected function buildDictionary(Collection $results): array
     {

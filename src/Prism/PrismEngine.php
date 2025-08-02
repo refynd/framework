@@ -6,7 +6,7 @@ use RuntimeException;
 
 /**
  * PrismEngine - Advanced Template Engine
- * 
+ *
  * Enhanced Prism template engine with support for:
  * - Template inheritance and components
  * - Section management and content stacking
@@ -22,22 +22,22 @@ class PrismEngine
     protected array $globals = [];
     protected bool $cacheEnabled = true;
     protected PrismCompiler $compiler;
-    
+
     // Template inheritance and sections
     protected array $sections = [];
     protected array $sectionStack = [];
     protected array $parentSections = [];
     protected ?string $currentLayout = null;
-    
+
     // Component and include data
     protected array $componentStack = [];
     protected array $dataStack = [];
     protected array $templates = []; // Virtual templates storage
-    
+
     // Error handling and debugging
     protected bool $debugMode = false;
     protected array $compilationErrors = [];
-    
+
     // Performance tracking
     protected array $renderStats = [];
 
@@ -47,11 +47,11 @@ class PrismEngine
         $this->cachePath = rtrim($cachePath, '/') ?: sys_get_temp_dir() . '/prism_cache';
         $this->debugMode = $debugMode;
         $this->compiler = new PrismCompiler();
-        
+
         if (!is_dir($this->cachePath)) {
             mkdir($this->cachePath, 0755, true);
         }
-        
+
         $this->registerDefaultFilters();
     }
 
@@ -61,7 +61,7 @@ class PrismEngine
     public function render(string $template, array $data = []): string
     {
         $startTime = microtime(true);
-        
+
         try {
             $templatePath = $this->findTemplate($template);
             $compiledPath = $this->getCompiledPath($templatePath);
@@ -71,17 +71,15 @@ class PrismEngine
             }
 
             $output = $this->renderCompiled($compiledPath, array_merge($this->globals, $data));
-            
+
             // Track performance if debug mode is enabled
             if ($this->debugMode) {
-                $this->renderStats[$template] = [
-                    'render_time' => microtime(true) - $startTime,
+                $this->renderStats[$template] = ['render_time' => microtime(true) - $startTime,
                     'template_path' => $templatePath,
                     'compiled_path' => $compiledPath,
-                    'data_keys' => array_keys($data),
-                ];
+                    'data_keys' => array_keys($data),];
             }
-            
+
             return $output;
         } catch (\Throwable $e) {
             if ($this->debugMode) {
@@ -154,7 +152,7 @@ class PrismEngine
     {
         $hash = md5($content);
         $cacheFile = $this->cachePath . '/string_' . $hash . '.php';
-        
+
         if (!file_exists($cacheFile) || !$this->cacheEnabled) {
             $compiled = $this->compiler->compile($content);
             if (!is_dir($this->cachePath)) {
@@ -162,7 +160,7 @@ class PrismEngine
             }
             file_put_contents($cacheFile, $compiled);
         }
-        
+
         return $this->renderCompiled($cacheFile, array_merge($this->globals, $data));
     }
 
@@ -218,10 +216,10 @@ class PrismEngine
         if (empty($this->sectionStack)) {
             throw new RuntimeException('Cannot end section: no section started');
         }
-        
+
         $name = array_pop($this->sectionStack);
         $content = ob_get_clean();
-        
+
         if (isset($this->sections[$name])) {
             $this->sections[$name] .= $content;
         } else {
@@ -245,10 +243,10 @@ class PrismEngine
         if (empty($this->sectionStack)) {
             throw new RuntimeException('Cannot show section: no section started');
         }
-        
+
         $name = end($this->sectionStack);
         $this->endSection();
-        
+
         return $this->yieldContent($name);
     }
 
@@ -268,7 +266,7 @@ class PrismEngine
         if (empty($this->sectionStack)) {
             return '';
         }
-        
+
         $name = end($this->sectionStack);
         return $this->parentSections[$name] ?? '';
     }
@@ -279,11 +277,11 @@ class PrismEngine
     public function applyFilter(string $filter, mixed $value, mixed ...$args): mixed
     {
         $filters = $this->compiler->getFilters();
-        
+
         if (!isset($filters[$filter])) {
             throw new RuntimeException("Unknown filter: {$filter}");
         }
-        
+
         return $filters[$filter]($value, ...$args);
     }
 
@@ -298,11 +296,9 @@ class PrismEngine
         }
 
         // Try multiple paths
-        $paths = [
-            $this->viewPath . '/' . ltrim($template, '/'),
+        $paths = [$this->viewPath . '/' . ltrim($template, '/'),
             $this->viewPath . '/templates/' . ltrim($template, '/'),
-            $this->viewPath . '/views/' . ltrim($template, '/'),
-        ];
+            $this->viewPath . '/views/' . ltrim($template, '/'),];
 
         foreach ($paths as $path) {
             if (file_exists($path)) {
@@ -365,7 +361,7 @@ class PrismEngine
     protected function validateCompiledTemplate(string $compiled): void
     {
         $tokens = token_get_all($compiled);
-        
+
         foreach ($tokens as $token) {
             if (is_array($token) && $token[0] === T_OPEN_TAG_WITH_ECHO) {
                 // Additional validation can be added here
@@ -383,10 +379,10 @@ class PrismEngine
             // Make Prism engine available to template
             $__prism = $this;
             $__data = $data;
-            
+
             // Extract variables into local scope
             extract($data, EXTR_SKIP);
-            
+
             ob_start();
             include $compiledPath;
             return ob_get_clean();
@@ -402,10 +398,10 @@ class PrismEngine
     {
         return sprintf(
             '<div style="background: #f8d7da; color: #721c24; padding: 1rem; border: 1px solid #f5c6cb; border-radius: 4px; font-family: monospace;">' .
-            '<h3>Prism Template Error</h3>' .
-            '<p><strong>Template:</strong> %s</p>' .
-            '<p><strong>Error:</strong> %s</p>' .
-            '<p><strong>File:</strong> %s:%d</p>' .
+            '<h3 > Prism Template Error</h3>' .
+            '<p >< strong > Template:</strong> %s</p>' .
+            '<p >< strong > Error:</strong> %s</p>' .
+            '<p >< strong > File:</strong> %s:%d</p>' .
             '<pre>%s</pre>' .
             '</div>',
             htmlspecialchars($template),
@@ -507,4 +503,3 @@ class PrismEngine
         return $this->compiler;
     }
 }
-

@@ -7,7 +7,7 @@ use Refynd\Database\Collection;
 
 /**
  * HasMany - One-to-many relationship
- * 
+ *
  * Represents a one-to-many relationship where the parent model
  * has multiple related models.
  */
@@ -20,7 +20,7 @@ class HasMany extends Relation
     {
         $this->foreignKey = $foreignKey;
         $this->localKey = $localKey;
-        
+
         parent::__construct($parent, $related);
     }
 
@@ -60,7 +60,7 @@ class HasMany extends Relation
 
     /**
      * Match the eagerly loaded results to their parents
-     * @param Collection<int, Model> $results
+     * @param Collection < int, Model> $results
      */
     public function match(array $models, Collection $results, string $relation): array
     {
@@ -68,7 +68,7 @@ class HasMany extends Relation
 
         foreach ($models as $model) {
             $key = $model->getAttribute($this->localKey);
-            
+
             if (isset($dictionary[$key])) {
                 $model->setRelation($relation, new Collection($dictionary[$key]));
             }
@@ -79,7 +79,7 @@ class HasMany extends Relation
 
     /**
      * Get the results of the relationship
-     * @return Collection<int, Model>
+     * @return Collection < int, Model>
      */
     public function getResults(): Collection
     {
@@ -92,7 +92,7 @@ class HasMany extends Relation
     public function create(array $attributes = []): Model
     {
         $attributes[$this->foreignKey] = $this->parent->getAttribute($this->localKey);
-        
+
         return $this->related::create($attributes);
     }
 
@@ -102,13 +102,13 @@ class HasMany extends Relation
     public function save(Model $model): bool
     {
         $model->setAttribute($this->foreignKey, $this->parent->getAttribute($this->localKey));
-        
+
         return $model->save();
     }
 
     /**
      * Build the model dictionary for matching
-     * @param Collection<int, Model> $results
+     * @param Collection < int, Model> $results
      */
     protected function buildDictionary(Collection $results): array
     {
@@ -116,11 +116,11 @@ class HasMany extends Relation
 
         foreach ($results as $result) {
             $key = $result->getAttribute($this->foreignKey);
-            
+
             if (!isset($dictionary[$key])) {
                 $dictionary[$key] = [];
             }
-            
+
             $dictionary[$key][] = $result;
         }
 

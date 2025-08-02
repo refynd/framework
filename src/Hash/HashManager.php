@@ -6,7 +6,7 @@ use InvalidArgumentException;
 
 /**
  * HashManager - Manages multiple hashing drivers
- * 
+ *
  * Provides a unified interface for working with different hashing algorithms.
  * Supports bcrypt, argon2, and custom hashers with driver switching.
  */
@@ -27,7 +27,7 @@ class HashManager implements HashInterface
     protected function createDefaultDrivers(): void
     {
         $this->drivers['bcrypt'] = new BcryptHasher();
-        
+
         if (defined('PASSWORD_ARGON2ID')) {
             $this->drivers['argon'] = new ArgonHasher();
             $this->drivers['argon2id'] = new ArgonHasher();

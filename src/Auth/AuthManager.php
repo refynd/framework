@@ -7,7 +7,7 @@ use InvalidArgumentException;
 
 /**
  * AuthManager - Core authentication manager
- * 
+ *
  * Handles user authentication, login/logout sessions, and "remember me" functionality.
  * Supports multiple user providers and guards.
  */
@@ -174,9 +174,9 @@ class AuthManager
     protected function queueRecallerCookie(AuthenticatableInterface $user): void
     {
         $token = $this->createRecallerToken();
-        
+
         $this->provider->updateRememberToken($user, $token);
-        
+
         $recaller = $user->getAuthIdentifier() . '|' . $token;
         $this->session['remember_token'] = $recaller;
     }

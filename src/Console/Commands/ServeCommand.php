@@ -19,7 +19,7 @@ class ServeCommand extends Command
     {
         $this->setName('serve:app')
              ->setDescription('Start the Refynd development server');
-             
+
         $this->addOption(
             'host',
             null,
@@ -41,23 +41,21 @@ class ServeCommand extends Command
     {
         $host = $input->getOption('host');
         $port = $input->getOption('port');
-        
-        $output->writeln([
+
+        $output->writeln(['',
+            '🔨 <fg = blue > Starting Refynd Development Server</fg = blue>',
+            '<fg = yellow>═══════════════════════════════════════</fg = yellow>',
             '',
-            '🔨 <fg=blue>Starting Refynd Development Server</fg=blue>',
-            '<fg=yellow>═══════════════════════════════════════</fg=yellow>',
+            "Server running at: <fg = green > http://{$host}:{$port}</fg = green>",
             '',
-            "Server running at: <fg=green>http://{$host}:{$port}</fg=green>",
-            '',
-            '<comment>Press Ctrl+C to stop the server</comment>',
-            '',
-        ]);
+            '<comment > Press Ctrl+C to stop the server</comment>',
+            '',]);
 
         // Get the public directory path
         $publicPath = getcwd() . '/public';
-        
+
         if (!is_dir($publicPath)) {
-            $output->writeln('<error>Public directory not found. Please run this command from your Refynd project root.</error>');
+            $output->writeln('<error > Public directory not found. Please run this command from your Refynd project root.</error>');
             return Command::FAILURE;
         }
 
@@ -72,11 +70,9 @@ class ServeCommand extends Command
         // Execute the server command
         $process = proc_open(
             $command,
-            [
-                0 => STDIN,
+            [0 => STDIN,
                 1 => STDOUT,
-                2 => STDERR,
-            ],
+                2 => STDERR,],
             $pipes
         );
 

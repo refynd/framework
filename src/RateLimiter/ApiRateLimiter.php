@@ -18,7 +18,7 @@ class ApiRateLimiter extends RateLimiter
     {
         $key = "api_key:{$apiKey}";
         $decaySeconds = $decayMinutes * 60;
-        
+
         if ($this->tooManyAttempts($key, $maxRequests)) {
             $limitInfo = $this->getLimitInfo($key, $maxRequests, $decaySeconds);
             throw new RateLimitExceededException(
@@ -38,7 +38,7 @@ class ApiRateLimiter extends RateLimiter
     {
         $key = "endpoint:{$endpoint}:{$identifier}";
         $decaySeconds = $decayMinutes * 60;
-        
+
         if ($this->tooManyAttempts($key, $maxRequests)) {
             $limitInfo = $this->getLimitInfo($key, $maxRequests, $decaySeconds);
             throw new RateLimitExceededException(
@@ -58,7 +58,7 @@ class ApiRateLimiter extends RateLimiter
     {
         $key = "api_key:{$apiKey}";
         $decaySeconds = $decayMinutes * 60;
-        
+
         return $this->getLimitInfo($key, $maxRequests, $decaySeconds);
     }
 }

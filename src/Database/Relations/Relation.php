@@ -8,7 +8,7 @@ use Refynd\Database\Collection;
 
 /**
  * Relation - Base class for all relationship types
- * 
+ *
  * Provides the foundation for implementing different types
  * of relationships between models.
  */
@@ -23,7 +23,7 @@ abstract class Relation
         $this->parent = $parent;
         $this->related = $related;
         $this->query = $related->newQuery();
-        
+
         $this->addConstraints();
     }
 
@@ -44,7 +44,7 @@ abstract class Relation
 
     /**
      * Match the eagerly loaded results to their parents
-     * @param Collection<int, Model> $results
+     * @param Collection < int, Model> $results
      */
     abstract public function match(array $models, Collection $results, string $relation): array;
 
@@ -99,7 +99,7 @@ abstract class Relation
 
     /**
      * Execute the query and get all results
-     * @return Collection<int, Model>
+     * @return Collection < int, Model>
      */
     public function get(): Collection
     {

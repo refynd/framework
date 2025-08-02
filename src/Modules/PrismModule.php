@@ -8,7 +8,7 @@ use Refynd\Prism\PrismView;
 
 /**
  * PrismModule - Enhanced Template Engine Module
- * 
+ *
  * Integrates the enhanced Prism template engine into the Refynd framework.
  * Provides view rendering, component management, template compilation services,
  * custom directives, filters, and framework integration.
@@ -31,26 +31,24 @@ class PrismModule extends Module
      */
     protected function registerEngine(Container $container): void
     {
-        $container->singleton(PrismEngine::class, function($container) {
+        $container->singleton(PrismEngine::class, function ($container) {
             $profile = $container->make(\Refynd\Config\AppProfile::class);
-            
+
             $viewPath = $profile->path('views');
             $cachePath = $profile->storagePath('cache/views');
             $debugMode = env('APP_DEBUG', false) === 'true';
-            
+
             $engine = new PrismEngine($viewPath, $cachePath, $debugMode);
-            
+
             // Add enhanced global variables
-            $engine->addGlobals([
-                'app_name' => env('APP_NAME', 'Refynd Application'),
+            $engine->addGlobals(['app_name' => env('APP_NAME', 'Refynd Application'),
                 'app_version' => env('APP_VERSION', '1.2.0'),
                 'app_url' => env('APP_URL', 'http://localhost'),
                 'current_year' => date('Y'),
                 'current_date' => date('Y-m-d'),
                 'current_time' => time(),
-                'debug' => $debugMode,
-            ]);
-            
+                'debug' => $debugMode,]);
+
             return $engine;
         });
 
@@ -65,8 +63,8 @@ class PrismModule extends Module
     protected function registerViewHelpers(Container $container): void
     {
         // Enhanced view factory function
-        $container->bind('view', function($container) {
-            return function(string $template, array $data = []) use ($container) {
+        $container->bind('view', function ($container) {
+            return function (string $template, array $data = []) use ($container) {
                 $engine = $container->make(PrismEngine::class);
                 return new PrismView($engine, $template, $data);
             };
@@ -220,12 +218,20 @@ class PrismModule extends Module
         $engine->filter('timeAgo', function ($timestamp) {
             $time = is_numeric($timestamp) ? $timestamp : strtotime($timestamp);
             $diff = time() - $time;
-            
-            if ($diff < 60) return 'just now';
-            if ($diff < 3600) return floor($diff / 60) . ' minutes ago';
-            if ($diff < 86400) return floor($diff / 3600) . ' hours ago';
-            if ($diff < 2592000) return floor($diff / 86400) . ' days ago';
-            
+
+            if ($diff < 60) {
+                return 'just now';
+            }
+            if ($diff < 3600) {
+                return floor($diff / 60) . ' minutes ago';
+            }
+            if ($diff < 86400) {
+                return floor($diff / 3600) . ' hours ago';
+            }
+            if ($diff < 2592000) {
+                return floor($diff / 86400) . ' days ago';
+            }
+
             return date('M j, Y', $time);
         });
 
@@ -245,16 +251,14 @@ class PrismModule extends Module
     public function boot(): void
     {
         $profile = app(\Refynd\Config\AppProfile::class);
-        
+
         // Create enhanced directory structure
-        $viewPaths = [
-            $profile->path('views'),
+        $viewPaths = [$profile->path('views'),
             $profile->path('views/layouts'),
             $profile->path('views/components'),
             $profile->path('views/pages'),
             $profile->path('views/partials'),
-            $profile->storagePath('cache/views'),
-        ];
+            $profile->storagePath('cache/views'),];
 
         foreach ($viewPaths as $path) {
             if (!is_dir($path)) {
@@ -263,12 +267,10 @@ class PrismModule extends Module
         }
 
         // Create .gitkeep files for organization
-        $gitkeepPaths = [
-            $profile->path('views/layouts/.gitkeep'),
+        $gitkeepPaths = [$profile->path('views/layouts/.gitkeep'),
             $profile->path('views/components/.gitkeep'),
             $profile->path('views/pages/.gitkeep'),
-            $profile->path('views/partials/.gitkeep'),
-        ];
+            $profile->path('views/partials/.gitkeep'),];
 
         foreach ($gitkeepPaths as $path) {
             if (!file_exists($path)) {
@@ -317,11 +319,11 @@ if (!function_exists('view')) {
     function view(string $template, array $data = []): PrismView
     {
         static $viewFactory = null;
-        
+
         if ($viewFactory === null) {
             $viewFactory = app('view');
         }
-        
+
         return $viewFactory($template, $data);
     }
 }
@@ -333,11 +335,11 @@ if (!function_exists('component')) {
     function component(string $name, array $data = []): PrismView
     {
         static $componentFactory = null;
-        
+
         if ($componentFactory === null) {
             $componentFactory = app('component');
         }
-        
+
         return $componentFactory($name, $data);
     }
 }

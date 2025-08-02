@@ -23,15 +23,11 @@ class S3Storage implements StorageInterface
     {
         $url = $this->endpoint . '/' . $this->bucket . '/' . ltrim($path, '/');
         $headers = $this->getAuthHeaders('PUT', $path, $contents);
-        
-        $context = stream_context_create([
-            'http' => [
-                'method' => 'PUT',
+
+        $context = stream_context_create(['http' => ['method' => 'PUT',
                 'header' => implode("\r\n", $headers),
-                'content' => $contents
-            ]
-        ]);
-        
+                'content' => $contents]]);
+
         $result = file_get_contents($url, false, $context);
         return $result !== false;
     }
@@ -40,14 +36,10 @@ class S3Storage implements StorageInterface
     {
         $url = $this->endpoint . '/' . $this->bucket . '/' . ltrim($path, '/');
         $headers = $this->getAuthHeaders('GET', $path);
-        
-        $context = stream_context_create([
-            'http' => [
-                'method' => 'GET',
-                'header' => implode("\r\n", $headers)
-            ]
-        ]);
-        
+
+        $context = stream_context_create(['http' => ['method' => 'GET',
+                'header' => implode("\r\n", $headers)]]);
+
         $result = file_get_contents($url, false, $context);
         if ($result === false) {
             throw new \Exception("Failed to get file: {$path}");
@@ -60,14 +52,10 @@ class S3Storage implements StorageInterface
         try {
             $url = $this->endpoint . '/' . $this->bucket . '/' . ltrim($path, '/');
             $headers = $this->getAuthHeaders('HEAD', $path);
-            
-            $context = stream_context_create([
-                'http' => [
-                    'method' => 'HEAD',
-                    'header' => implode("\r\n", $headers)
-                ]
-            ]);
-            
+
+            $context = stream_context_create(['http' => ['method' => 'HEAD',
+                    'header' => implode("\r\n", $headers)]]);
+
             $result = @file_get_contents($url, false, $context);
             return $result !== false;
         } catch (\Exception $e) {
@@ -79,14 +67,10 @@ class S3Storage implements StorageInterface
     {
         $url = $this->endpoint . '/' . $this->bucket . '/' . ltrim($path, '/');
         $headers = $this->getAuthHeaders('DELETE', $path);
-        
-        $context = stream_context_create([
-            'http' => [
-                'method' => 'DELETE',
-                'header' => implode("\r\n", $headers)
-            ]
-        ]);
-        
+
+        $context = stream_context_create(['http' => ['method' => 'DELETE',
+                'header' => implode("\r\n", $headers)]]);
+
         $result = file_get_contents($url, false, $context);
         return $result !== false;
     }
@@ -152,15 +136,13 @@ class S3Storage implements StorageInterface
         $timestamp = gmdate('D, d M Y H:i:s T');
         $contentMd5 = base64_encode(md5($content, true));
         $contentType = 'application/octet-stream';
-        
+
         $stringToSign = "{$method}\n{$contentMd5}\n{$contentType}\n{$timestamp}\n/{$this->bucket}/{$path}";
         $signature = base64_encode(hash_hmac('sha1', $stringToSign, $this->secretKey, true));
-        
-        return [
-            "Date: {$timestamp}",
+
+        return ["Date: {$timestamp}",
             "Content-Type: {$contentType}",
             "Content-MD5: {$contentMd5}",
-            "Authorization: AWS {$this->accessKey}:{$signature}"
-        ];
+            "Authorization: AWS {$this->accessKey}:{$signature}"];
     }
 }

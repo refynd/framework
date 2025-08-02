@@ -75,8 +75,10 @@ class LocalStorage implements StorageInterface
     public function files(string $directory = ''): array
     {
         $path = $this->fullPath($directory);
-        if (!is_dir($path)) return [];
-        
+        if (!is_dir($path)) {
+            return [];
+        }
+
         $files = [];
         foreach (scandir($path) as $file) {
             if ($file !== '.' && $file !== '..' && is_file($path . '/' . $file)) {
@@ -89,8 +91,10 @@ class LocalStorage implements StorageInterface
     public function directories(string $directory = ''): array
     {
         $path = $this->fullPath($directory);
-        if (!is_dir($path)) return [];
-        
+        if (!is_dir($path)) {
+            return [];
+        }
+
         $dirs = [];
         foreach (scandir($path) as $dir) {
             if ($dir !== '.' && $dir !== '..' && is_dir($path . '/' . $dir)) {
@@ -109,8 +113,10 @@ class LocalStorage implements StorageInterface
     public function deleteDirectory(string $path): bool
     {
         $fullPath = $this->fullPath($path);
-        if (!is_dir($fullPath)) return false;
-        
+        if (!is_dir($fullPath)) {
+            return false;
+        }
+
         $files = array_diff(scandir($fullPath), ['.', '..']);
         foreach ($files as $file) {
             $filePath = $fullPath . '/' . $file;

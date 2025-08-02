@@ -6,7 +6,7 @@ use RuntimeException;
 
 /**
  * PrismCompiler - Advanced Template Compiler
- * 
+ *
  * Enhanced Prism compiler with support for:
  * - Template inheritance and components
  * - Custom directives and filters
@@ -41,7 +41,7 @@ class PrismCompiler
         try {
             // Pre-processing
             $content = $this->preprocess($content);
-            
+
             // Core compilation phases
             $content = $this->compileComments($content);
             $content = $this->compileRawBlocks($content);
@@ -55,7 +55,7 @@ class PrismCompiler
             $content = $this->compileFilters($content);
             $content = $this->compileEchos($content);
             $content = $this->compileAssets($content);
-            
+
             // Post-processing
             $content = $this->postprocess($content);
 
@@ -96,10 +96,10 @@ class PrismCompiler
     {
         // Remove BOM if present
         $content = ltrim($content, "\xEF\xBB\xBF");
-        
+
         // Normalize line endings
         $content = str_replace(["\r\n", "\r"], "\n", $content);
-        
+
         return $content;
     }
 
@@ -110,10 +110,10 @@ class PrismCompiler
     {
         // Remove unnecessary whitespace between PHP tags
         $content = preg_replace('/\?>\s+<\?php/', '', $content);
-        
+
         // Optimize consecutive echo statements
         $content = preg_replace('/\?>\s*<\?=/', '; echo ', $content);
-        
+
         return $content;
     }
 
@@ -133,8 +133,7 @@ class PrismCompiler
      */
     protected function registerPatterns(): void
     {
-        $this->patterns = [
-            // Enhanced control structures with better error handling
+        $this->patterns = [// Enhanced control structures with better error handling
             '/\{\%\s*if\s+(.+?)\s*\%\}/s' => '<?php if ($1): ?>',
             '/\{\%\s*elseif\s+(.+?)\s*\%\}/s' => '<?php elseif ($1): ?>',
             '/\{\%\s*else\s*\%\}/' => '<?php else: ?>',
@@ -173,8 +172,7 @@ class PrismCompiler
             '/\{\%\s*isset\s+(.+?)\s*\%\}/s' => '<?php if (isset($1)): ?>',
             '/\{\%\s*empty\s+(.+?)\s*\%\}/s' => '<?php if (empty($1)): ?>',
             '/\{\%\s*endisset\s*\%\}/' => '<?php endif; ?>',
-            '/\{\%\s*endempty\s*\%\}/' => '<?php endif; ?>',
-        ];
+            '/\{\%\s*endempty\s*\%\}/' => '<?php endif; ?>',];
     }
 
     /**
@@ -182,30 +180,28 @@ class PrismCompiler
      */
     protected function registerBuiltinFilters(): void
     {
-        $this->filters = [
-            'upper' => fn($value) => strtoupper($value),
-            'lower' => fn($value) => strtolower($value),
-            'title' => fn($value) => ucwords($value),
-            'capitalize' => fn($value) => ucfirst($value),
-            'length' => fn($value) => is_countable($value) ? count($value) : strlen($value),
-            'reverse' => fn($value) => is_array($value) ? array_reverse($value) : strrev($value),
-            'sort' => function($value) {
+        $this->filters = ['upper' => fn ($value) => strtoupper($value),
+            'lower' => fn ($value) => strtolower($value),
+            'title' => fn ($value) => ucwords($value),
+            'capitalize' => fn ($value) => ucfirst($value),
+            'length' => fn ($value) => is_countable($value) ? count($value) : strlen($value),
+            'reverse' => fn ($value) => is_array($value) ? array_reverse($value) : strrev($value),
+            'sort' => function ($value) {
                 if (is_array($value)) {
                     sort($value);
                     return $value;
                 }
                 return $value;
             },
-            'json' => fn($value) => json_encode($value, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP),
-            'date' => fn($value, $format = 'Y-m-d') => date($format, is_numeric($value) ? $value : strtotime($value)),
-            'default' => fn($value, $default = '') => $value ?: $default,
-            'escape' => fn($value) => htmlspecialchars($value, ENT_QUOTES, 'UTF-8'),
-            'raw' => fn($value) => $value,
-            'trim' => fn($value) => trim($value),
-            'slug' => fn($value) => preg_replace('/[^a-z0-9]+/', '-', strtolower($value)),
-            'truncate' => fn($value, $length = 100, $suffix = '...') => 
-                strlen($value) > $length ? substr($value, 0, $length) . $suffix : $value,
-        ];
+            'json' => fn ($value) => json_encode($value, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP),
+            'date' => fn ($value, $format = 'Y-m-d') => date($format, is_numeric($value) ? $value : strtotime($value)),
+            'default' => fn ($value, $default = '') => $value ?: $default,
+            'escape' => fn ($value) => htmlspecialchars($value, ENT_QUOTES, 'UTF-8'),
+            'raw' => fn ($value) => $value,
+            'trim' => fn ($value) => trim($value),
+            'slug' => fn ($value) => preg_replace('/[^a-z0-9]+/', '-', strtolower($value)),
+            'truncate' => fn ($value, $length = 100, $suffix = '...') =>
+                strlen($value) > $length ? substr($value, 0, $length) . $suffix : $value,];
     }
 
     /**
@@ -342,10 +338,10 @@ class PrismCompiler
     {
         // Remove single-line comments {{-- comment --}}
         $content = preg_replace('/\{\{--.*?--\}\}/', '', $content);
-        
+
         // Remove multi-line comments
         $content = preg_replace('/\{\{--.*?--\}\}/s', '', $content);
-        
+
         return $content;
     }
 
@@ -365,11 +361,11 @@ class PrismCompiler
     protected function compileExtends(string $content): string
     {
         $pattern = '/@extends\s*\(\s*[\'"](.+?)[\'"]\s*\)/';
-        
+
         if (preg_match($pattern, $content, $matches)) {
             $layout = $matches[1];
             $content = preg_replace($pattern, '', $content);
-            
+
             // Store layout information for proper inheritance
             $content = "<?php \$__prism_layout = '{$layout}'; ?>\n" . $content;
         }
@@ -383,12 +379,12 @@ class PrismCompiler
     protected function compileComponents(string $content): string
     {
         // @component('name', ['prop' => 'value'])
-        $pattern = '/@component\s*\(\s*[\'"](.+?)[\'"]\s*(?:,\s*(.+?))?\s*\)/';
-        
+        $pattern = '/@component\s*\(\s*[\'"](.+?)[\'"]\s*(?:, \s*(.+?))?\s*\)/';
+
         $content = preg_replace_callback($pattern, function ($matches) {
             $component = $matches[1];
             $props = $matches[2] ?? '[]';
-            
+
             return "<?php \$__componentData = array_merge(\$__data ?? [], {$props}); ?>" .
                    "<?php \$__component = component('{$component}', \$__componentData); ?>" .
                    "<?php echo \$__component->render(); ?>";
@@ -405,12 +401,12 @@ class PrismCompiler
      */
     protected function compileIncludes(string $content): string
     {
-        $pattern = '/@include\s*\(\s*[\'"](.+?)[\'"]\s*(?:,\s*(.+?))?\s*\)/';
-        
+        $pattern = '/@include\s*\(\s*[\'"](.+?)[\'"]\s*(?:, \s*(.+?))?\s*\)/';
+
         return preg_replace_callback($pattern, function ($matches) {
             $template = $matches[1];
             $data = $matches[2] ?? '[]';
-            
+
             return "<?php echo \$__prism->render('{$template}', array_merge(\$__data ?? [], {$data})); ?>";
         }, $content);
     }
@@ -421,19 +417,25 @@ class PrismCompiler
     protected function compileSections(string $content): string
     {
         // @section('name')
-        $content = preg_replace('/@section\s*\(\s*[\'"](.+?)[\'"]\s*\)/', 
-            '<?php \$__prism->startSection(\'$1\'); ?>', $content);
-        
+        $content = preg_replace(
+            '/@section\s*\(\s*[\'"](.+?)[\'"]\s*\)/',
+            '<?php \$__prism->startSection(\'$1\'); ?>',
+            $content
+        );
+
         // @section('name', 'content')
-        $content = preg_replace('/@section\s*\(\s*[\'"](.+?)[\'"]\s*,\s*[\'"](.+?)[\'"]\s*\)/', 
-            '<?php \$__prism->setSection(\'$1\', \'$2\'); ?>', $content);
-        
+        $content = preg_replace(
+            '/@section\s*\(\s*[\'"](.+?)[\'"]\s*, \s*[\'"](.+?)[\'"]\s*\)/',
+            '<?php \$__prism->setSection(\'$1\', \'$2\'); ?>',
+            $content
+        );
+
         // @parent (append to parent section)
         $content = preg_replace('/@parent/', '<?php echo \$__prism->getParentSection(); ?>', $content);
-        
+
         // @show (display section immediately)
         $content = preg_replace('/@show/', '<?php echo \$__prism->showSection(); ?>', $content);
-        
+
         // @endsection
         $content = preg_replace('/@endsection/', '<?php \$__prism->endSection(); ?>', $content);
 
@@ -446,12 +448,18 @@ class PrismCompiler
     protected function compileYields(string $content): string
     {
         // @yield('name', 'default')
-        $content = preg_replace('/@yield\s*\(\s*[\'"](.+?)[\'"]\s*,\s*[\'"](.+?)[\'"]\s*\)/', 
-            '<?php echo \$__prism->yieldContent(\'$1\', \'$2\'); ?>', $content);
-        
+        $content = preg_replace(
+            '/@yield\s*\(\s*[\'"](.+?)[\'"]\s*, \s*[\'"](.+?)[\'"]\s*\)/',
+            '<?php echo \$__prism->yieldContent(\'$1\', \'$2\'); ?>',
+            $content
+        );
+
         // @yield('name')
-        $content = preg_replace('/@yield\s*\(\s*[\'"](.+?)[\'"]\s*\)/', 
-            '<?php echo \$__prism->yieldContent(\'$1\'); ?>', $content);
+        $content = preg_replace(
+            '/@yield\s*\(\s*[\'"](.+?)[\'"]\s*\)/',
+            '<?php echo \$__prism->yieldContent(\'$1\'); ?>',
+            $content
+        );
 
         return $content;
     }
@@ -463,7 +471,7 @@ class PrismCompiler
     {
         foreach ($this->customDirectives as $name => $handler) {
             $pattern = '/@' . $name . '\s*(?:\(\s*(.+?)\s*\))?/';
-            
+
             $content = preg_replace_callback($pattern, function ($matches) use ($handler) {
                 $expression = $matches[1] ?? '';
                 return $handler($expression);
@@ -492,21 +500,21 @@ class PrismCompiler
     {
         // Pattern: {{ $variable | filter:arg1:arg2 }}
         $pattern = '/\{\{\s*(.+?)\s*\|\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*(?::\s*(.+?))?\s*\}\}/';
-        
+
         return preg_replace_callback($pattern, function ($matches) {
             $variable = trim($matches[1]);
             $filter = $matches[2];
             $args = isset($matches[3]) ? explode(':', $matches[3]) : [];
-            
+
             if (!isset($this->filters[$filter])) {
                 throw new RuntimeException("Unknown filter: {$filter}");
             }
-            
+
             $argString = '';
             if (!empty($args)) {
                 $argString = ', ' . implode(', ', array_map('trim', $args));
             }
-            
+
             return "<?= \$__prism->applyFilter('{$filter}', {$variable}{$argString}) ?>";
         }, $content);
     }
@@ -518,10 +526,13 @@ class PrismCompiler
     {
         // Raw echo {{{ }}} - no escaping
         $content = preg_replace('/\{\{\{\s*(.+?)\s*\}\}\}/', '<?= $1 ?? \'\' ?>', $content);
-        
+
         // Escaped echo {{ }} - HTML escaped
-        $content = preg_replace('/\{\{\s*(.+?)\s*\}\}/', 
-            '<?= htmlspecialchars($1 ?? \'\', ENT_QUOTES, \'UTF-8\') ?>', $content);
+        $content = preg_replace(
+            '/\{\{\s*(.+?)\s*\}\}/',
+            '<?= htmlspecialchars($1 ?? \'\', ENT_QUOTES, \'UTF-8\') ?>',
+            $content
+        );
 
         return $content;
     }
@@ -556,16 +567,25 @@ class PrismCompiler
     protected function compileAssets(string $content): string
     {
         // @asset('path')
-        $content = preg_replace('/@asset\s*\(\s*[\'"](.+?)[\'"]\s*\)/', 
-            '<?php echo asset(\'$1\'); ?>', $content);
-        
+        $content = preg_replace(
+            '/@asset\s*\(\s*[\'"](.+?)[\'"]\s*\)/',
+            '<?php echo asset(\'$1\'); ?>',
+            $content
+        );
+
         // @css('path')
-        $content = preg_replace('/@css\s*\(\s*[\'"](.+?)[\'"]\s*\)/', 
-            '<?php echo \'<link rel="stylesheet" href="\' . asset(\'$1\') . \'">\'; ?>', $content);
-        
+        $content = preg_replace(
+            '/@css\s*\(\s*[\'"](.+?)[\'"]\s*\)/',
+            '<?php echo \'<link rel="stylesheet" href="\' . asset(\'$1\') . \'">\'; ?>',
+            $content
+        );
+
         // @js('path')
-        $content = preg_replace('/@js\s*\(\s*[\'"](.+?)[\'"]\s*\)/', 
-            '<?php echo \'<script src="\' . asset(\'$1\') . \'"></script>\'; ?>', $content);
+        $content = preg_replace(
+            '/@js\s*\(\s*[\'"](.+?)[\'"]\s*\)/',
+            '<?php echo \'<script src="\' . asset(\'$1\') . \'"></script>\'; ?>',
+            $content
+        );
 
         return $content;
     }

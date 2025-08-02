@@ -6,7 +6,7 @@ use RuntimeException;
 
 /**
  * ArgonHasher - Argon2 implementation of the HashInterface
- * 
+ *
  * Uses PHP's password_hash() with PASSWORD_ARGON2ID algorithm.
  * Provides modern, secure password hashing with memory and time cost factors.
  */
@@ -32,11 +32,9 @@ class ArgonHasher implements HashInterface
             throw new RuntimeException('Argon2ID hashing not supported.');
         }
 
-        $hash = password_hash($value, PASSWORD_ARGON2ID, [
-            'memory_cost' => $options['memory'] ?? $this->memory,
+        $hash = password_hash($value, PASSWORD_ARGON2ID, ['memory_cost' => $options['memory'] ?? $this->memory,
             'time_cost' => $options['time'] ?? $this->time,
-            'threads' => $options['threads'] ?? $this->threads,
-        ]);
+            'threads' => $options['threads'] ?? $this->threads,]);
 
         if (!is_string($hash) || empty($hash)) {
             throw new RuntimeException('Argon2ID hashing failed.');
@@ -66,11 +64,9 @@ class ArgonHasher implements HashInterface
             return false;
         }
 
-        return password_needs_rehash($hashedValue, PASSWORD_ARGON2ID, [
-            'memory_cost' => $options['memory'] ?? $this->memory,
+        return password_needs_rehash($hashedValue, PASSWORD_ARGON2ID, ['memory_cost' => $options['memory'] ?? $this->memory,
             'time_cost' => $options['time'] ?? $this->time,
-            'threads' => $options['threads'] ?? $this->threads,
-        ]);
+            'threads' => $options['threads'] ?? $this->threads,]);
     }
 
     /**

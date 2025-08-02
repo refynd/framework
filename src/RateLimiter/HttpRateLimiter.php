@@ -17,11 +17,11 @@ class HttpRateLimiter extends RateLimiter
     public function getRequestKey(string $ip, string $route, ?string $userId = null): string
     {
         $parts = [$ip, $route];
-        
+
         if ($userId) {
             $parts[] = "user:{$userId}";
         }
-        
+
         return implode(':', $parts);
     }
 
@@ -32,7 +32,7 @@ class HttpRateLimiter extends RateLimiter
     {
         $key = $this->getRequestKey($ip, $route, $userId);
         $decaySeconds = $decayMinutes * 60;
-        
+
         if ($this->tooManyAttempts($key, $maxAttempts)) {
             $limitInfo = $this->getLimitInfo($key, $maxAttempts, $decaySeconds);
             throw new RateLimitExceededException(
@@ -51,12 +51,10 @@ class HttpRateLimiter extends RateLimiter
     public function getHeaders(string $key, int $maxAttempts, int $decaySeconds = 60): array
     {
         $limitInfo = $this->getLimitInfo($key, $maxAttempts, $decaySeconds);
-        
-        return [
-            'X-RateLimit-Limit' => $maxAttempts,
+
+        return ['X-RateLimit-Limit' => $maxAttempts,
             'X-RateLimit-Remaining' => max(0, $limitInfo['remaining']),
             'X-RateLimit-Reset' => $limitInfo['reset_time'],
-            'Retry-After' => $limitInfo['available_in'] > 0 ? $limitInfo['available_in'] : null,
-        ];
+            'Retry-After' => $limitInfo['available_in'] > 0 ? $limitInfo['available_in'] : null,];
     }
 }

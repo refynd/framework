@@ -7,7 +7,7 @@ use RuntimeException;
 
 /**
  * ModuleManager - Orchestrates Module Registration and Booting
- * 
+ *
  * Manages the registration and booting of all framework modules,
  * ensuring proper initialization order and dependency resolution.
  */
@@ -70,13 +70,13 @@ class ModuleManager
         }
 
         $module = $this->modules[$moduleClass];
-        
+
         // Boot dependencies first
         $this->bootDependencies($module);
-        
+
         // Boot the module
         $module->boot();
-        
+
         $this->booted[$moduleClass] = true;
     }
 

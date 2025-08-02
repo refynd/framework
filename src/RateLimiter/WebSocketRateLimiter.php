@@ -25,7 +25,7 @@ class WebSocketRateLimiter extends RateLimiter
     public function checkClient(mixed $client): void
     {
         $key = $this->getClientKey($client);
-        
+
         if ($this->tooManyAttempts($key, $this->maxRequests)) {
             $limitInfo = $this->getLimitInfo($key, $this->maxRequests, $this->decaySeconds);
             throw new RateLimitExceededException(
@@ -65,11 +65,9 @@ class WebSocketRateLimiter extends RateLimiter
 
     public function getServerStats(): array
     {
-        return [
-            'max_requests' => $this->maxRequests,
+        return ['max_requests' => $this->maxRequests,
             'time_window' => $this->decaySeconds,
-            'type' => 'websocket',
-        ];
+            'type' => 'websocket',];
     }
 
     private function getClientKey(mixed $client): string
@@ -80,11 +78,11 @@ class WebSocketRateLimiter extends RateLimiter
             $peerName = @socket_getpeername($client, $address, $port);
             return $peerName ? "{$address}:{$port}" : (string)$client;
         }
-        
+
         if (is_object($client)) {
             return spl_object_hash($client);
         }
-        
+
         return (string)$client;
     }
 }

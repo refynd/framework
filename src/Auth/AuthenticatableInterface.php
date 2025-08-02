@@ -4,7 +4,7 @@ namespace Refynd\Auth;
 
 /**
  * AuthenticatableInterface - Contract for authenticatable entities
- * 
+ *
  * Defines the interface that user models must implement to work
  * with the authentication system.
  */

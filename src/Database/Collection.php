@@ -10,14 +10,14 @@ use JsonSerializable;
 
 /**
  * Collection - Enhanced array-like container for ORM results
- * 
+ *
  * Provides powerful methods for working with collections of models
  * and arrays in an elegant, fluent interface.
- * 
+ *
  * @template TKey of array-key
  * @template TValue
- * @implements ArrayAccess<TKey, TValue>
- * @implements IteratorAggregate<TKey, TValue>
+ * @implements ArrayAccess < TKey, TValue>
+ * @implements IteratorAggregate < TKey, TValue>
  */
 class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable
 {
@@ -30,7 +30,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
     /**
      * Create a new collection instance
-     * @return static<TKey, TValue>
+     * @return static < TKey, TValue>
      */
     public static function make(array $items = []): static
     {
@@ -85,7 +85,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
     /**
      * Filter the collection using a callback
-     * @return static<TKey, TValue>
+     * @return static < TKey, TValue>
      */
     public function filter(?callable $callback = null): static
     {
@@ -98,7 +98,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
     /**
      * Map each item through a callback
-     * @return static<TKey, TValue>
+     * @return static < TKey, TValue>
      */
     public function map(callable $callback): static
     {
@@ -124,7 +124,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
     /**
      * Get a subset of the collection
-     * @return static<TKey, TValue>
+     * @return static < TKey, TValue>
      */
     public function slice(int $offset, ?int $length = null): static
     {
@@ -149,7 +149,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
     /**
      * Group the collection by a key
-     * @return static<TKey, TValue>
+     * @return static < TKey, TValue>
      */
     public function groupBy(string|callable $groupBy): static
     {
@@ -157,11 +157,11 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
         foreach ($this->items as $item) {
             $key = is_callable($groupBy) ? $groupBy($item) : $this->getItemValue($item, $groupBy);
-            
+
             if (!isset($groups[$key])) {
                 $groups[$key] = new self();
             }
-            
+
             $groups[$key]->push($item);
         }
 
@@ -170,7 +170,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
     /**
      * Sort the collection using a callback
-     * @return static<TKey, TValue>
+     * @return static < TKey, TValue>
      */
     public function sort(?callable $callback = null): static
     {
@@ -187,7 +187,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
     /**
      * Sort the collection by a key
-     * @return static<TKey, TValue>
+     * @return static < TKey, TValue>
      */
     public function sortBy(string|callable $callback, int $options = SORT_REGULAR, bool $descending = false): static
     {
@@ -209,7 +209,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
     /**
      * Reverse the order of items
-     * @return static<TKey, TValue>
+     * @return static < TKey, TValue>
      */
     public function reverse(): static
     {
@@ -241,7 +241,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
         foreach ($this->items as $item) {
             $itemValue = $this->getItemValue($item, $key);
-            
+
             if ($this->operatorForWhere($itemValue, $operator, $value)) {
                 return true;
             }
@@ -252,7 +252,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
     /**
      * Get unique items from the collection
-     * @return static<TKey, TValue>
+     * @return static < TKey, TValue>
      */
     public function unique(?string $key = null): static
     {
@@ -265,7 +265,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
         foreach ($this->items as $item) {
             $value = $this->getItemValue($item, $key);
-            
+
             if (!in_array($value, $exists, true)) {
                 $exists[] = $value;
                 $unique[] = $item;
@@ -284,7 +284,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
             if (is_array($item)) {
                 return array_intersect_key($item, array_flip($keys));
             }
-            
+
             if ($item instanceof Model) {
                 $result = [];
                 foreach ($keys as $key) {
@@ -299,7 +299,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
     /**
      * Get all values for a given key
-     * @return static<TKey, TValue>
+     * @return static < TKey, TValue>
      */
     public function pluck(string $value, ?string $key = null): static
     {
@@ -307,7 +307,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
         foreach ($this->items as $item) {
             $itemValue = $this->getItemValue($item, $value);
-            
+
             if ($key === null) {
                 $results[] = $itemValue;
             } else {
@@ -398,7 +398,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
             if ($item instanceof Model) {
                 return $item->toArray();
             }
-            
+
             if ($item instanceof Collection) {
                 return $item->toArray();
             }
@@ -486,7 +486,7 @@ class Collection implements ArrayAccess, Countable, IteratorAggregate, JsonSeria
 
     // IteratorAggregate interface
     /**
-     * @return ArrayIterator<TKey, TValue>
+     * @return ArrayIterator < TKey, TValue>
      */
     public function getIterator(): ArrayIterator
     {

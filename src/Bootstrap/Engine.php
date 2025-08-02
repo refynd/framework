@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Engine - The Heart of Refynd
- * 
+ *
  * The Engine orchestrates the entire framework lifecycle:
  * - Loads configuration profiles
  * - Registers and boots modules
@@ -26,7 +26,7 @@ class Engine
     protected ModuleManager $moduleManager;
     protected bool $booted = false;
     protected static ?Engine $instance = null;
-    
+
     // Performance optimizations
     protected array $lazyServices = [];
     protected bool $debugMode = false;
@@ -40,10 +40,10 @@ class Engine
         $this->debugMode = $profile->get('debug', false);
         $this->container = new Container();
         $this->moduleManager = new ModuleManager($this->container);
-        
+
         static::$instance = $this;
         $this->registerCoreBindings();
-        
+
         if ($this->debugMode) {
             $this->bootMetrics['construct_time'] = microtime(true) - $this->bootStartTime;
         }
@@ -55,10 +55,10 @@ class Engine
     public function runHttp(): Response
     {
         $this->boot();
-        
+
         $request = Request::createFromGlobals();
         $kernel = $this->container->make(HttpKernel::class);
-        
+
         return $kernel->handle($request);
     }
 
@@ -68,9 +68,9 @@ class Engine
     public function runConsole(): int
     {
         $this->boot();
-        
+
         $kernel = $this->container->make(ConsoleKernel::class);
-        
+
         return $kernel->handle();
     }
 
@@ -84,12 +84,12 @@ class Engine
         }
 
         $bootStart = microtime(true);
-        
+
         $this->loadModules();
         $this->bootModules();
-        
+
         $this->booted = true;
-        
+
         if ($this->debugMode) {
             $this->bootMetrics['boot_time'] = microtime(true) - $bootStart;
             $this->bootMetrics['total_time'] = microtime(true) - $this->bootStartTime;
@@ -105,11 +105,11 @@ class Engine
     {
         // Load modules from configuration
         $modules = $this->profile->get('modules', []);
-        
+
         foreach ($modules as $moduleClass) {
             $this->moduleManager->register($moduleClass);
         }
-        
+
         // Allow profile to register additional modules
         $this->profile->registerModules($this->container);
     }
@@ -127,15 +127,15 @@ class Engine
      */
     protected function registerCoreBindings(): void
     {
-        $this->container->singleton(Container::class, fn() => $this->container);
-        $this->container->singleton(AppProfile::class, fn() => $this->profile);
-        $this->container->singleton(Engine::class, fn() => $this);
-        $this->container->singleton(ModuleManager::class, fn() => $this->moduleManager);
-        
+        $this->container->singleton(Container::class, fn () => $this->container);
+        $this->container->singleton(AppProfile::class, fn () => $this->profile);
+        $this->container->singleton(Engine::class, fn () => $this);
+        $this->container->singleton(ModuleManager::class, fn () => $this->moduleManager);
+
         // Register lazy services for better performance
         $this->registerLazyServices();
     }
-    
+
     /**
      * Register lazy-loaded services
      */
@@ -146,7 +146,7 @@ class Engine
             $manager = $container->make(\Refynd\Cache\CacheManager::class);
             return new \Refynd\Cache\HighPerformanceCache($manager->store());
         });
-        
+
         // Router with compilation enabled
         $this->container->singleton('router.optimized', function ($container) {
             $router = $container->make(\Refynd\Http\Router::class);
@@ -198,21 +198,21 @@ class Engine
 
         return static::$instance->container;
     }
-    
+
     /**
      * Get performance metrics
      */
     public function getPerformanceMetrics(): array
     {
         $metrics = $this->bootMetrics;
-        
+
         if ($this->container instanceof Container) {
             $metrics['container'] = $this->container->getCacheStats();
         }
-        
+
         return $metrics;
     }
-    
+
     /**
      * Enable or disable debug mode
      */
@@ -220,7 +220,7 @@ class Engine
     {
         $this->debugMode = $debug;
     }
-    
+
     /**
      * Check if debug mode is enabled
      */
@@ -228,7 +228,7 @@ class Engine
     {
         return $this->debugMode;
     }
-    
+
     /**
      * Clear all performance caches
      */
@@ -237,7 +237,7 @@ class Engine
         if ($this->container instanceof Container) {
             $this->container->clearCaches();
         }
-        
+
         // Clear router cache if available
         try {
             $router = $this->container->make('router.optimized');
@@ -247,7 +247,7 @@ class Engine
         } catch (\Exception $e) {
             // Router not available, ignore
         }
-        
+
         // Clear high-performance cache if available
         try {
             $cache = $this->container->make('cache.high_performance');

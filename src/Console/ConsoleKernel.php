@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\ConsoleOutput;
 
 /**
  * ConsoleKernel - Handles CLI Commands
- * 
+ *
  * Manages the console application and processes CLI commands
  * through the Smith command-line interface.
  */
@@ -24,7 +24,7 @@ class ConsoleKernel
         $this->container = $container;
         $this->console = new Application('Refynd Smith', '1.0.0');
         $this->console->setAutoExit(false);
-        
+
         $this->loadCommands();
     }
 
@@ -47,7 +47,7 @@ class ConsoleKernel
         // Add default commands
         $this->console->add(new Commands\WelcomeCommand());
         $this->console->add(new Commands\ServeCommand());
-        
+
         // Additional commands will be loaded from modules
     }
 

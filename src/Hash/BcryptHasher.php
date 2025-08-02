@@ -6,7 +6,7 @@ use RuntimeException;
 
 /**
  * BcryptHasher - Bcrypt implementation of the HashInterface
- * 
+ *
  * Uses PHP's password_hash() with PASSWORD_BCRYPT algorithm.
  * Provides secure password hashing with configurable cost factors.
  */
@@ -26,9 +26,7 @@ class BcryptHasher implements HashInterface
     {
         $cost = $options['rounds'] ?? $this->rounds;
 
-        $hash = password_hash($value, PASSWORD_BCRYPT, [
-            'cost' => $cost,
-        ]);
+        $hash = password_hash($value, PASSWORD_BCRYPT, ['cost' => $cost,]);
 
         if (!is_string($hash) || empty($hash)) {
             throw new RuntimeException('Bcrypt hashing not supported.');
@@ -56,9 +54,7 @@ class BcryptHasher implements HashInterface
     {
         $cost = $options['rounds'] ?? $this->rounds;
 
-        return password_needs_rehash($hashedValue, PASSWORD_BCRYPT, [
-            'cost' => $cost,
-        ]);
+        return password_needs_rehash($hashedValue, PASSWORD_BCRYPT, ['cost' => $cost,]);
     }
 
     /**

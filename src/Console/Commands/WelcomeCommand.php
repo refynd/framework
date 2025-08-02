@@ -22,27 +22,25 @@ class WelcomeCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln([
+        $output->writeln(['',
+            '🔨 <fg = blue > Welcome to Refynd Framework</fg = blue>',
+            '<fg = yellow>═══════════════════════════════════════</fg = yellow>',
             '',
-            '🔨 <fg=blue>Welcome to Refynd Framework</fg=blue>',
-            '<fg=yellow>═══════════════════════════════════════</fg=yellow>',
-            '',
-            '<fg=green>Refynd</fg=green> is a powerful, elegant PHP framework designed for',
+            '<fg = green > Refynd</fg = green> is a powerful, elegant PHP framework designed for',
             'crafting exceptional web applications with confidence and joy.',
             '',
-            '<comment>Available Commands:</comment>',
-            '  <info>php smith serve:app</info>        Start the development server',
-            '  <info>php smith build:controller</info>  Create a new controller',
-            '  <info>php smith make:record</info>       Create a new Ledger record model',
-            '  <info>php smith run:migrate</info>       Run database migrations',
-            '  <info>php smith test:all</info>          Run the test suite',
+            '<comment > Available Commands:</comment>',
+            '  <info > php smith serve:app</info>        Start the development server',
+            '  <info > php smith build:controller</info>  Create a new controller',
+            '  <info > php smith make:record</info>       Create a new Ledger record model',
+            '  <info > php smith run:migrate</info>       Run database migrations',
+            '  <info > php smith test:all</info>          Run the test suite',
             '',
-            '<comment>Documentation:</comment>',
-            '  Visit <fg=cyan>https://refynd.dev/docs</fg=cyan> for comprehensive guides',
+            '<comment > Documentation:</comment>',
+            '  Visit <fg = cyan > https://refynd.dev/docs</fg = cyan> for comprehensive guides',
             '',
-            '<fg=yellow>Happy crafting! 🚀</fg=yellow>',
-            '',
-        ]);
+            '<fg = yellow > Happy crafting! 🚀</fg = yellow>',
+            '',]);
 
         return Command::SUCCESS;
     }

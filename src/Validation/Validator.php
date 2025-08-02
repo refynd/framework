@@ -76,10 +76,10 @@ class Validator
     private function validateRule(string $field, mixed $value, string $rule): void
     {
         $parameters = [];
-        
+
         if (strpos($rule, ':') !== false) {
             [$rule, $parameterString] = explode(':', $rule, 2);
-            $parameters = explode(',', $parameterString);
+            $parameters = explode(', ', $parameterString);
         }
 
         $method = 'validate' . ucfirst($rule);
@@ -115,44 +115,43 @@ class Validator
     private function addError(string $field, string $rule, array $parameters): void
     {
         $message = $this->getErrorMessage($field, $rule, $parameters);
-        
+
         if (!isset($this->errors[$field])) {
             $this->errors[$field] = [];
         }
-        
+
         $this->errors[$field][] = $message;
     }
 
     private function getErrorMessage(string $field, string $rule, array $parameters): string
     {
         $key = "{$field}.{$rule}";
-        
+
         if (isset($this->messages[$key])) {
             return $this->interpolateMessage($this->messages[$key], $field, $parameters);
         }
-        
+
         if (isset($this->messages[$rule])) {
             return $this->interpolateMessage($this->messages[$rule], $field, $parameters);
         }
-        
+
         return $this->getDefaultMessage($field, $rule, $parameters);
     }
 
     private function interpolateMessage(string $message, string $field, array $parameters): string
     {
         $message = str_replace(':attribute', $field, $message);
-        
+
         foreach ($parameters as $index => $parameter) {
             $message = str_replace(':' . $index, $parameter, $message);
         }
-        
+
         return $message;
     }
 
     private function getDefaultMessage(string $field, string $rule, array $parameters): string
     {
-        $messages = [
-            'required' => "The {$field} field is required.",
+        $messages = ['required' => "The {$field} field is required.",
             'email' => "The {$field} must be a valid email address.",
             'min' => "The {$field} must be at least {$parameters[0]} characters.",
             'max' => "The {$field} may not be greater than {$parameters[0]} characters.",
@@ -175,8 +174,7 @@ class Validator
             'after' => "The {$field} must be a date after {$parameters[0]}.",
             'alpha' => "The {$field} may only contain letters.",
             'alpha_num' => "The {$field} may only contain letters and numbers.",
-            'alpha_dash' => "The {$field} may only contain letters, numbers, dashes and underscores.",
-        ];
+            'alpha_dash' => "The {$field} may only contain letters, numbers, dashes and underscores.",];
 
         return $messages[$rule] ?? "The {$field} field is invalid.";
     }
@@ -267,7 +265,7 @@ class Validator
     {
         $confirmationField = $field . '_confirmation';
         $confirmationValue = $this->getValue($confirmationField);
-        
+
         return $value === $confirmationValue;
     }
 

@@ -52,14 +52,14 @@ class Route
     public function extractParameters(string $uri): array
     {
         $pattern = $this->getCompiledPattern();
-        
+
         if (!preg_match($pattern, $uri, $matches)) {
             return [];
         }
 
         $parameters = [];
         $parameterNames = $this->getParameterNames();
-        
+
         for ($i = 1; $i < count($matches); $i++) {
             if (isset($parameterNames[$i - 1])) {
                 $parameters[$parameterNames[$i - 1]] = $matches[$i];
@@ -72,23 +72,23 @@ class Route
     private function getCompiledPattern(): string
     {
         $pattern = $this->uri;
-        
+
         // Replace route parameters {param} with regex patterns
         $pattern = preg_replace_callback('/\{([^}]+)\}/', function ($matches) {
             $paramName = $matches[1];
-            
+
             // Check if parameter has custom regex
             if (isset($this->where[$paramName])) {
                 return '(' . $this->where[$paramName] . ')';
             }
-            
+
             // Default parameter pattern (everything except forward slash)
             return '([^/]+)';
         }, $pattern);
-        
+
         // Escape other regex characters
         $pattern = str_replace('/', '\/', $pattern);
-        
+
         return '/^' . $pattern . '$/';
     }
 
@@ -141,11 +141,11 @@ class Route
     public function url(array $parameters = []): string
     {
         $url = $this->uri;
-        
+
         foreach ($parameters as $key => $value) {
             $url = str_replace('{' . $key . '}', $value, $url);
         }
-        
+
         return $url;
     }
 

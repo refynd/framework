@@ -4,7 +4,7 @@ namespace Refynd\Prism;
 
 /**
  * PrismView - Template View Class
- * 
+ *
  * Handles rendering and data injection for Prism templates.
  * Provides a convenient interface for template rendering.
  */
@@ -74,12 +74,12 @@ if (!function_exists('view')) {
     function view(string $template, array $data = []): PrismView
     {
         static $engine = null;
-        
+
         if ($engine === null) {
             // Default paths - can be configured through container
             $viewPath = getcwd() . '/views';
             $cachePath = getcwd() . '/storage/cache/views';
-            
+
             $engine = new PrismEngine($viewPath, $cachePath);
         }
 

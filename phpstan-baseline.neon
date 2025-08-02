@@ -1,6 +1,21 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Api/ApiResource.php
+
+		-
+			message: "#^Access to an undefined property object\\:\\:\\$id\\.$#"
+			count: 1
+			path: src/Auth/AccessControlManager.php
+
+		-
+			message: "#^Unsafe usage of new static\\(\\)\\.$#"
+			count: 1
+			path: src/Cache/TaggedCache.php
+
+		-
 			message: "#^Method Refynd\\\\Database\\\\Collection\\:\\:filter\\(\\) should return static\\(Refynd\\\\Database\\\\Collection\\<TKey of \\(int\\|string\\), TValue\\>\\) but returns Refynd\\\\Database\\\\Collection\\<\\(int\\|string\\), mixed\\>\\.$#"
 			count: 2
 			path: src/Database/Collection.php
@@ -54,3 +69,18 @@ parameters:
 			message: "#^Method Refynd\\\\Database\\\\Model\\:\\:allAsCollection\\(\\) should return Refynd\\\\Database\\\\Collection\\<int, static\\(Refynd\\\\Database\\\\Model\\)\\> but returns array\\|Refynd\\\\Database\\\\Collection\\<int, Refynd\\\\Database\\\\Model\\>\\.$#"
 			count: 1
 			path: src/Database/Model.php
+
+		-
+			message: "#^Property Refynd\\\\Mail\\\\Drivers\\\\SmtpDriver\\:\\:\\$connection has no type specified\\.$#"
+			count: 1
+			path: src/Mail/Drivers/SmtpDriver.php
+
+		-
+			message: "#^Method class@anonymous/Mail/MailManager\\.php\\:167\\:\\:build\\(\\) should return class@anonymous/Mail/MailManager\\.php\\:167 but returns Refynd\\\\Mail\\\\Mailable\\.$#"
+			count: 1
+			path: src/Mail/MailManager.php
+
+		-
+			message: "#^Method class@anonymous/Mail/MailManager\\.php\\:269\\:\\:build\\(\\) should return class@anonymous/Mail/MailManager\\.php\\:269 but returns Refynd\\\\Mail\\\\Mailable\\.$#"
+			count: 1
+			path: src/Mail/MailManager.php

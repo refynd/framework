@@ -15,11 +15,11 @@ class StorageManager
     public function disk(?string $name = null): StorageInterface
     {
         $name = $name ?: $this->defaultDisk;
-        
+
         if (!isset($this->disks[$name])) {
             throw new \Exception("Storage disk '{$name}' not found");
         }
-        
+
         return $this->disks[$name];
     }
 

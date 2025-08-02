@@ -4,7 +4,7 @@ namespace Refynd\Database;
 
 /**
  * Column - Represents a database column definition
- * 
+ *
  * Provides fluent methods for defining column properties
  * and constraints.
  */

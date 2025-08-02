@@ -10,7 +10,7 @@ use RuntimeException;
 
 /**
  * Container - Refynd's Dependency Injection Container
- * 
+ *
  * A powerful and flexible container that manages object dependencies
  * and provides automatic resolution with reflection.
  */
@@ -19,7 +19,7 @@ class Container implements ContainerInterface
     protected array $bindings = [];
     protected array $instances = [];
     protected array $singletons = [];
-    
+
     // Performance optimization caches
     protected array $reflectionCache = [];
     protected array $constructorCache = [];
@@ -35,10 +35,8 @@ class Container implements ContainerInterface
             $concrete = $abstract;
         }
 
-        $this->bindings[$abstract] = [
-            'concrete' => $concrete,
-            'shared' => $shared,
-        ];
+        $this->bindings[$abstract] = ['concrete' => $concrete,
+            'shared' => $shared,];
     }
 
     /**
@@ -107,7 +105,7 @@ class Container implements ContainerInterface
             } else {
                 $object = $this->build($concrete, $parameters);
             }
-            
+
             // Cache the resolution for future use (only for parameter-less resolutions)
             if (empty($parameters) && !($concrete instanceof Closure)) {
                 $this->cacheResolution($abstract, $concrete);
@@ -139,7 +137,7 @@ class Container implements ContainerInterface
      */
     protected function isShared(string $abstract): bool
     {
-        return isset($this->bindings[$abstract]['shared']) && 
+        return isset($this->bindings[$abstract]['shared']) &&
                $this->bindings[$abstract]['shared'] === true;
     }
 
@@ -152,15 +150,15 @@ class Container implements ContainerInterface
         if (!isset($this->reflectionCache[$concrete])) {
             $this->cacheReflectionData($concrete);
         }
-        
+
         $reflectionData = $this->reflectionCache[$concrete];
-        
+
         if (!$reflectionData['instantiable']) {
             throw new RuntimeException("Class [{$concrete}] is not instantiable");
         }
 
         if ($reflectionData['constructor'] === null) {
-            return new $concrete;
+            return new $concrete();
         }
 
         $dependencies = $this->resolveDependencies(
@@ -170,7 +168,7 @@ class Container implements ContainerInterface
 
         return $reflectionData['reflector']->newInstanceArgs($dependencies);
     }
-    
+
     /**
      * Cache reflection data for a class
      */
@@ -182,15 +180,13 @@ class Container implements ContainerInterface
 
         $reflector = new ReflectionClass($concrete);
         $constructor = $reflector->getConstructor();
-        
-        $this->reflectionCache[$concrete] = [
-            'reflector' => $reflector,
+
+        $this->reflectionCache[$concrete] = ['reflector' => $reflector,
             'instantiable' => $reflector->isInstantiable(),
             'constructor' => $constructor,
-            'parameters' => $constructor ? $constructor->getParameters() : [],
-        ];
+            'parameters' => $constructor ? $constructor->getParameters() : [],];
     }
-    
+
     /**
      * Cache resolution strategy for repeated use
      */
@@ -199,14 +195,14 @@ class Container implements ContainerInterface
         if (!isset($this->reflectionCache[$concrete])) {
             return; // Should not happen, but safety first
         }
-        
+
         $reflectionData = $this->reflectionCache[$concrete];
-        
+
         // Only cache simple resolutions (no constructor or simple dependencies)
         if ($reflectionData['constructor'] === null) {
-            $this->resolvedTypes[$abstract] = fn() => new $concrete;
+            $this->resolvedTypes[$abstract] = fn () => new $concrete();
         } elseif (empty($reflectionData['parameters'])) {
-            $this->resolvedTypes[$abstract] = fn() => $reflectionData['reflector']->newInstance();
+            $this->resolvedTypes[$abstract] = fn () => $reflectionData['reflector']->newInstance();
         }
     }
 
@@ -228,7 +224,7 @@ class Container implements ContainerInterface
     /**
      * Resolve a single dependency
      */
-        protected function resolveDependency(ReflectionParameter $parameter, array $parameters = []): mixed
+    protected function resolveDependency(ReflectionParameter $parameter, array $parameters = []): mixed
     {
         $name = $parameter->getName();
 
@@ -267,7 +263,7 @@ class Container implements ContainerInterface
 
         throw new RuntimeException("Cannot resolve dependency [{$name}] of type [{$typeName}]");
     }
-    
+
     /**
      * Clear all performance caches
      */
@@ -278,20 +274,18 @@ class Container implements ContainerInterface
         $this->parameterCache = [];
         $this->resolvedTypes = [];
     }
-    
+
     /**
      * Get cache statistics for debugging
      */
     public function getCacheStats(): array
     {
-        return [
-            'reflection_cache_size' => count($this->reflectionCache),
+        return ['reflection_cache_size' => count($this->reflectionCache),
             'constructor_cache_size' => count($this->constructorCache),
             'parameter_cache_size' => count($this->parameterCache),
             'resolved_types_size' => count($this->resolvedTypes),
             'instances_count' => count($this->instances),
-            'bindings_count' => count($this->bindings),
-        ];
+            'bindings_count' => count($this->bindings),];
     }
 
     /**
@@ -303,14 +297,14 @@ class Container implements ContainerInterface
             [$class, $method] = $callback;
             $reflector = new ReflectionClass($class);
             $methodReflector = $reflector->getMethod($method);
-            
+
             $instance = is_object($class) ? $class : $this->make($class);
-            
+
             $dependencies = $this->resolveDependencies(
                 $methodReflector->getParameters(),
                 $parameters
             );
-            
+
             return $methodReflector->invokeArgs($instance, $dependencies);
         }
 
@@ -320,7 +314,7 @@ class Container implements ContainerInterface
                 $reflector->getParameters(),
                 $parameters
             );
-            
+
             return $reflector->invokeArgs($dependencies);
         }
 

@@ -16,12 +16,12 @@ class QueueWorker
     {
         while (!$this->shouldStop) {
             $job = $this->queue->pop($queueName);
-            
+
             if ($job === null) {
                 sleep($sleep);
                 continue;
             }
-            
+
             $this->process($job);
         }
     }
@@ -36,17 +36,17 @@ class QueueWorker
         try {
             $job = $queuedJob->job;
             $queuedJob->increment();
-            
+
             // Set up timeout handling
             if ($job instanceof Job) {
                 set_time_limit($job->getTimeout());
             }
-            
+
             // Execute the job
             $job->handle();
-            
+
             echo "Job completed: " . $job->getName() . "\n";
-            
+
         } catch (\Exception $exception) {
             $this->handleFailedJob($queuedJob, $exception);
         }
@@ -55,10 +55,10 @@ class QueueWorker
     private function handleFailedJob(QueuedJob $queuedJob, \Exception $exception): void
     {
         $job = $queuedJob->job;
-        
+
         // Check if we should retry
         $maxTries = $job instanceof Job ? $job->getMaxTries() : 3;
-        
+
         if ($queuedJob->shouldRetry($maxTries)) {
             // Re-queue for retry after delay
             $queuedJob->availableAt = time() + (60 * $queuedJob->attempts); // Exponential backoff

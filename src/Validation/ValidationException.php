@@ -48,9 +48,7 @@ class ValidationException extends Exception
 
     public function toArray(): array
     {
-        return [
-            'message' => $this->getMessage(),
-            'errors' => $this->errors,
-        ];
+        return ['message' => $this->getMessage(),
+            'errors' => $this->errors,];
     }
 }

@@ -7,7 +7,7 @@ use RuntimeException;
 
 /**
  * AppProfile - Configuration Profile Manager
- * 
+ *
  * Manages application configuration with environment-specific profiles
  * and modular configuration loading.
  */
@@ -21,7 +21,7 @@ class AppProfile
     {
         $this->basePath = $basePath ?? $this->detectBasePath();
         $this->environment = $environment;
-        
+
         $this->loadEnvironment();
         $this->loadConfiguration();
     }
@@ -34,28 +34,28 @@ class AppProfile
         // For classes that extend AppProfile, use their location as reference
         $reflection = new \ReflectionClass($this);
         $classPath = dirname($reflection->getFileName());
-        
+
         // Go up directories until we find composer.json or vendor directory
         $current = $classPath;
         $maxLevels = 10; // Prevent infinite loops
         $level = 0;
-        
+
         while ($level < $maxLevels) {
-            if (file_exists($current . '/composer.json') || 
+            if (file_exists($current . '/composer.json') ||
                 file_exists($current . '/vendor') ||
                 file_exists($current . '/public/index.php')) {
                 return $current;
             }
-            
+
             $parent = dirname($current);
             if ($parent === $current) {
                 break; // Reached filesystem root
             }
-            
+
             $current = $parent;
             $level++;
         }
-        
+
         // Fallback to current working directory
         return getcwd() ?: __DIR__;
     }
@@ -66,7 +66,7 @@ class AppProfile
     public static function load(string $basePath): self
     {
         $environment = $_ENV['REFYND_ENV'] ?? $_SERVER['REFYND_ENV'] ?? 'production';
-        
+
         return new self($basePath, $environment);
     }
 
@@ -196,14 +196,14 @@ class AppProfile
     protected function loadConfiguration(): void
     {
         $configPath = $this->configPath();
-        
+
         if (!is_dir($configPath)) {
             return;
         }
 
         // Load base configuration files
         $this->loadConfigFiles($configPath);
-        
+
         // Load environment-specific configuration
         $envConfigPath = $configPath . DIRECTORY_SEPARATOR . $this->environment;
         if (is_dir($envConfigPath)) {
@@ -217,11 +217,11 @@ class AppProfile
     protected function loadConfigFiles(string $path): void
     {
         $files = glob($path . DIRECTORY_SEPARATOR . '*.php');
-        
+
         foreach ($files as $file) {
             $key = basename($file, '.php');
             $config = require $file;
-            
+
             if (is_array($config)) {
                 $this->config[$key] = array_merge(
                     $this->config[$key] ?? [],

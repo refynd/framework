@@ -11,7 +11,7 @@ use Refynd\Database\Relations\HasOne;
 
 /**
  * Model - Enhanced ORM Model with Relationships
- * 
+ *
  * Provides elegant database interactions with support for relationships,
  * scopes, events, and advanced querying capabilities.
  */
@@ -24,7 +24,7 @@ abstract class Model extends Record
     protected bool $timestamps = true;
     protected string $createdAt = 'created_at';
     protected string $updatedAt = 'updated_at';
-    
+
     protected array $relations = [];
     protected array $relationshipData = [];
 
@@ -77,7 +77,7 @@ abstract class Model extends Record
 
     /**
      * Get all records as a Collection object
-     * @return Collection<int, static>
+     * @return Collection < int, static>
      */
     public static function allAsCollection(): Collection
     {
@@ -91,7 +91,7 @@ abstract class Model extends Record
     {
         $foreignKey = $foreignKey ?: $this->getForeignKey();
         $localKey = $localKey ?: $this->primaryKey;
-        
+
         return new HasMany($this, new $related(), $foreignKey, $localKey);
     }
 
@@ -102,7 +102,7 @@ abstract class Model extends Record
     {
         $foreignKey = $foreignKey ?: $this->getForeignKey();
         $localKey = $localKey ?: $this->primaryKey;
-        
+
         return new HasOne($this, new $related(), $foreignKey, $localKey);
     }
 
@@ -113,7 +113,7 @@ abstract class Model extends Record
     {
         $foreignKey = $foreignKey ?: $this->getRelatedForeignKey($related);
         $ownerKey = $ownerKey ?: (new $related())->primaryKey;
-        
+
         return new BelongsTo($this, new $related(), $foreignKey, $ownerKey);
     }
 
@@ -125,7 +125,7 @@ abstract class Model extends Record
         $table = $table ?: $this->joiningTable($related);
         $foreignPivotKey = $foreignPivotKey ?: $this->getForeignKey();
         $relatedPivotKey = $relatedPivotKey ?: (new $related())->getForeignKey();
-        
+
         return new BelongsToMany($this, new $related(), $table, $foreignPivotKey, $relatedPivotKey);
     }
 
@@ -178,13 +178,11 @@ abstract class Model extends Record
      */
     protected function joiningTable(string $related): string
     {
-        $models = [
-            strtolower(class_basename($this)),
-            strtolower(class_basename($related))
-        ];
-        
+        $models = [strtolower(class_basename($this)),
+            strtolower(class_basename($related))];
+
         sort($models);
-        
+
         return implode('_', $models);
     }
 
@@ -194,11 +192,11 @@ abstract class Model extends Record
     protected function updateTimestamps(): void
     {
         $now = date('Y-m-d H:i:s');
-        
+
         if (!$this->exists) {
             $this->setAttribute($this->createdAt, $now);
         }
-        
+
         $this->setAttribute($this->updatedAt, $now);
     }
 
@@ -221,7 +219,7 @@ abstract class Model extends Record
 
         if (method_exists($this, $relation)) {
             $result = $this->$relation();
-            
+
             if ($result instanceof Relations\Relation) {
                 $this->relationshipData[$relation] = $result->getResults();
                 return $this->relationshipData[$relation];
@@ -246,7 +244,7 @@ abstract class Model extends Record
     public function toArray(): array
     {
         $attributes = parent::toArray();
-        
+
         // Add loaded relationships
         foreach ($this->relationshipData as $key => $value) {
             if ($value instanceof Collection) {
@@ -254,7 +252,7 @@ abstract class Model extends Record
             } elseif ($value instanceof Model) {
                 $attributes[$key] = $value->toArray();
             } elseif (is_array($value)) {
-                $attributes[$key] = array_map(function($item) {
+                $attributes[$key] = array_map(function ($item) {
                     return $item instanceof Model ? $item->toArray() : $item;
                 }, $value);
             } else {

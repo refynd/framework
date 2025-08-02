@@ -31,25 +31,25 @@ class StorageCommand extends Command
     {
         $diskName = $input->getOption('disk');
         $storage = $this->container->make(StorageManager::class);
-        
+
         if ($diskName) {
             $disk = $storage->disk($diskName);
-            $output->writeln("<info>Storage Disk: {$diskName}</info>");
+            $output->writeln("<info > Storage Disk: {$diskName}</info>");
         } else {
             $disk = $storage->disk();
-            $output->writeln("<info>Default Storage Disk</info>");
+            $output->writeln("<info > Default Storage Disk</info>");
         }
-        
+
         // Show files in root directory
         $files = $disk->files();
         $directories = $disk->directories();
-        
-        $output->writeln('<comment>Directories:</comment>');
+
+        $output->writeln('<comment > Directories:</comment>');
         foreach ($directories as $directory) {
             $output->writeln("  📁 {$directory}");
         }
-        
-        $output->writeln('<comment>Files:</comment>');
+
+        $output->writeln('<comment > Files:</comment>');
         foreach ($files as $file) {
             if ($disk->exists($file)) {
                 $size = $disk->size($file);
@@ -57,10 +57,10 @@ class StorageCommand extends Command
                 $output->writeln("  📄 {$file} ({$size} bytes, modified: {$lastModified})");
             }
         }
-        
-        $output->writeln('<info>Total files: ' . count($files) . '</info>');
-        $output->writeln('<info>Total directories: ' . count($directories) . '</info>');
-        
+
+        $output->writeln('<info > Total files: ' . count($files) . '</info>');
+        $output->writeln('<info > Total directories: ' . count($directories) . '</info>');
+
         return Command::SUCCESS;
     }
 }

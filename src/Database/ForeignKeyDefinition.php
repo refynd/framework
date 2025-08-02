@@ -4,7 +4,7 @@ namespace Refynd\Database;
 
 /**
  * ForeignKeyDefinition - Represents a foreign key constraint definition
- * 
+ *
  * Provides fluent methods for defining foreign key relationships
  * and actions.
  */
@@ -93,14 +93,14 @@ class ForeignKeyDefinition
         }
 
         $name = $this->name ?: "fk_{$this->column}";
-        
+
         $sql = "CONSTRAINT `{$name}` FOREIGN KEY (`{$this->column}`) ";
         $sql .= "REFERENCES `{$this->on}` (`{$this->references}`)";
-        
+
         if ($this->onDelete !== 'RESTRICT') {
             $sql .= " ON DELETE {$this->onDelete}";
         }
-        
+
         if ($this->onUpdate !== 'RESTRICT') {
             $sql .= " ON UPDATE {$this->onUpdate}";
         }

@@ -7,7 +7,7 @@ use Refynd\Database\Model;
 
 /**
  * DatabaseUserProvider - Database implementation of UserProviderInterface
- * 
+ *
  * Retrieves users from a database using the Refynd ORM.
  * Handles credential validation and password rehashing.
  */
@@ -28,7 +28,7 @@ class DatabaseUserProvider implements UserProviderInterface
     public function retrieveById(mixed $identifier): ?AuthenticatableInterface
     {
         $modelClass = $this->model;
-        
+
         return $modelClass::where('id', $identifier)->first();
     }
 
@@ -38,7 +38,7 @@ class DatabaseUserProvider implements UserProviderInterface
     public function retrieveByToken(mixed $identifier, string $token): ?AuthenticatableInterface
     {
         $modelClass = $this->model;
-        
+
         $user = $modelClass::where('id', $identifier)->first();
 
         if (!$user) {
@@ -46,7 +46,7 @@ class DatabaseUserProvider implements UserProviderInterface
         }
 
         $rememberToken = $user->getRememberToken();
-        
+
         return $rememberToken && hash_equals($rememberToken, $token) ? $user : null;
     }
 
@@ -56,7 +56,7 @@ class DatabaseUserProvider implements UserProviderInterface
     public function updateRememberToken(AuthenticatableInterface $user, string $token): void
     {
         $user->setRememberToken($token);
-        
+
         if ($user instanceof Model) {
             $user->save();
         }
@@ -69,7 +69,7 @@ class DatabaseUserProvider implements UserProviderInterface
     {
         $credentials = array_filter(
             $credentials,
-            fn($key) => !str_contains($key, 'password'),
+            fn ($key) => !str_contains($key, 'password'),
             ARRAY_FILTER_USE_KEY
         );
 
@@ -97,7 +97,7 @@ class DatabaseUserProvider implements UserProviderInterface
     public function validateCredentials(AuthenticatableInterface $user, array $credentials): bool
     {
         $plain = $credentials['password'] ?? '';
-        
+
         return $this->hasher->check($plain, $user->getAuthPassword());
     }
 
@@ -122,8 +122,8 @@ class DatabaseUserProvider implements UserProviderInterface
     public function createModel(): AuthenticatableInterface
     {
         $class = '\\'.ltrim($this->model, '\\');
-        
-        return new $class;
+
+        return new $class();
     }
 
     /**

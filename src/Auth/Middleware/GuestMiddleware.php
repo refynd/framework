@@ -11,7 +11,7 @@ use Closure;
 
 /**
  * GuestMiddleware - Protects routes requiring no authentication
- * 
+ *
  * Ensures that only guests (unauthenticated users) can access certain routes.
  * Redirects authenticated users to a specified location (typically home/dashboard).
  */

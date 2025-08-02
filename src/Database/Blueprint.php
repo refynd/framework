@@ -4,7 +4,7 @@ namespace Refynd\Database;
 
 /**
  * Blueprint - Schema blueprint for table creation and modification
- * 
+ *
  * Provides fluent methods for defining table structure,
  * columns, indexes, and constraints.
  */
@@ -169,10 +169,8 @@ class Blueprint
      */
     public function primary(string|array $columns): void
     {
-        $this->commands[] = [
-            'type' => 'primary',
-            'columns' => is_array($columns) ? $columns : [$columns]
-        ];
+        $this->commands[] = ['type' => 'primary',
+            'columns' => is_array($columns) ? $columns : [$columns]];
     }
 
     /**
@@ -182,12 +180,10 @@ class Blueprint
     {
         $columns = is_array($columns) ? $columns : [$columns];
         $name = $name ?: 'idx_' . $this->table . '_' . implode('_', $columns);
-        
-        $this->commands[] = [
-            'type' => 'index',
+
+        $this->commands[] = ['type' => 'index',
             'columns' => $columns,
-            'name' => $name
-        ];
+            'name' => $name];
     }
 
     /**
@@ -197,12 +193,10 @@ class Blueprint
     {
         $columns = is_array($columns) ? $columns : [$columns];
         $name = $name ?: 'unique_' . $this->table . '_' . implode('_', $columns);
-        
-        $this->commands[] = [
-            'type' => 'unique',
+
+        $this->commands[] = ['type' => 'unique',
             'columns' => $columns,
-            'name' => $name
-        ];
+            'name' => $name];
     }
 
     /**
@@ -211,10 +205,8 @@ class Blueprint
     public function foreign(string $column): ForeignKeyDefinition
     {
         $foreign = new ForeignKeyDefinition($column);
-        $this->commands[] = [
-            'type' => 'foreign',
-            'definition' => $foreign
-        ];
+        $this->commands[] = ['type' => 'foreign',
+            'definition' => $foreign];
         return $foreign;
     }
 
@@ -224,12 +216,10 @@ class Blueprint
     public function dropColumn(string|array $columns): void
     {
         $columns = is_array($columns) ? $columns : [$columns];
-        
+
         foreach ($columns as $column) {
-            $this->commands[] = [
-                'type' => 'drop_column',
-                'column' => $column
-            ];
+            $this->commands[] = ['type' => 'drop_column',
+                'column' => $column];
         }
     }
 
@@ -239,14 +229,14 @@ class Blueprint
     public function toSql(): string
     {
         $sql = "CREATE TABLE {$this->table} (\n";
-        
+
         $definitions = [];
-        
+
         // Add column definitions
         foreach ($this->columns as $column) {
             $definitions[] = '  ' . $column->toSql();
         }
-        
+
         // Add constraints
         foreach ($this->commands as $command) {
             switch ($command['type']) {
@@ -267,10 +257,10 @@ class Blueprint
                     break;
             }
         }
-        
-        $sql .= implode(",\n", $definitions);
-        $sql .= "\n) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
-        
+
+        $sql .= implode(", \n", $definitions);
+        $sql .= "\n) ENGINE = InnoDB DEFAULT CHARSET = utf8mb4 COLLATE = utf8mb4_unicode_ci";
+
         return $sql;
     }
 
@@ -280,12 +270,12 @@ class Blueprint
     public function toSqlStatements(): array
     {
         $statements = [];
-        
+
         // Add new columns
         foreach ($this->columns as $column) {
             $statements[] = "ALTER TABLE {$this->table} ADD COLUMN " . $column->toSql();
         }
-        
+
         // Process commands
         foreach ($this->commands as $command) {
             switch ($command['type']) {
@@ -305,7 +295,7 @@ class Blueprint
                     break;
             }
         }
-        
+
         return $statements;
     }
 }

@@ -14,15 +14,15 @@ class QueueModule extends Module
     public function register(Container $container): void
     {
         $this->container = $container;
-        
+
         // Register queue driver
-        $container->singleton('queue', function() {
+        $container->singleton('queue', function () {
             $pdo = $this->container->make(\PDO::class);
             return new DatabaseQueue($pdo);
         });
-        
+
         // Register queue worker
-        $container->singleton(QueueWorker::class, function() {
+        $container->singleton(QueueWorker::class, function () {
             $queue = $this->container->make('queue');
             return new QueueWorker($queue);
         });

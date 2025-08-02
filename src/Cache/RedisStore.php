@@ -38,7 +38,7 @@ class RedisStore implements CacheInterface
     public function get(string $key, mixed $default = null): mixed
     {
         $value = $this->redis->get($this->prefix . $key);
-        
+
         if ($value === false) {
             return $default;
         }
@@ -49,7 +49,7 @@ class RedisStore implements CacheInterface
     public function put(string $key, mixed $value, int $ttl = 3600): bool
     {
         $serialized = serialize($value);
-        
+
         if ($ttl > 0) {
             return $this->redis->setex($this->prefix . $key, $ttl, $serialized);
         }
@@ -65,7 +65,7 @@ class RedisStore implements CacheInterface
     public function flush(): bool
     {
         $keys = $this->redis->keys($this->prefix . '*');
-        
+
         if (empty($keys)) {
             return true;
         }
@@ -91,28 +91,28 @@ class RedisStore implements CacheInterface
     public function remember(string $key, int $ttl, callable $callback): mixed
     {
         $value = $this->get($key);
-        
+
         if ($value !== null) {
             return $value;
         }
-        
+
         $value = $callback();
         $this->put($key, $value, $ttl);
-        
+
         return $value;
     }
 
     public function rememberForever(string $key, callable $callback): mixed
     {
         $value = $this->get($key);
-        
+
         if ($value !== null) {
             return $value;
         }
-        
+
         $value = $callback();
         $this->forever($key, $value);
-        
+
         return $value;
     }
 
@@ -123,39 +123,39 @@ class RedisStore implements CacheInterface
 
     public function many(array $keys): array
     {
-        $prefixedKeys = array_map(fn($key) => $this->prefix . $key, $keys);
+        $prefixedKeys = array_map(fn ($key) => $this->prefix . $key, $keys);
         $values = $this->redis->mGet($prefixedKeys);
-        
+
         $result = [];
         foreach ($keys as $index => $key) {
             $result[$key] = $values[$index] !== false ? unserialize($values[$index]) : null;
         }
-        
+
         return $result;
     }
 
     public function putMany(array $values, int $ttl = 3600): bool
     {
         $pipe = $this->redis->multi();
-        
+
         foreach ($values as $key => $value) {
             $serialized = serialize($value);
-            
+
             if ($ttl > 0) {
                 $pipe->setex($this->prefix . $key, $ttl, $serialized);
             } else {
                 $pipe->set($this->prefix . $key, $serialized);
             }
         }
-        
+
         $results = $pipe->exec();
-        
+
         return !in_array(false, $results, true);
     }
 
     public function forgetMany(array $keys): bool
     {
-        $prefixedKeys = array_map(fn($key) => $this->prefix . $key, $keys);
+        $prefixedKeys = array_map(fn ($key) => $this->prefix . $key, $keys);
         return $this->redis->del($prefixedKeys) > 0;
     }
 

@@ -4,7 +4,7 @@ namespace Refynd\Auth;
 
 /**
  * UserProviderInterface - Contract for user providers
- * 
+ *
  * Defines the interface for retrieving users from various storage systems
  * (database, API, LDAP, etc.) for authentication purposes.
  */

@@ -29,6 +29,7 @@ phpunit.xml
 # Development tools
 .php_cs.cache
 .php-cs-fixer.cache
+.php-cs-fixer.php
 .phpstan.cache
 
 # Logs and temporary files

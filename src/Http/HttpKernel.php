@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * HttpKernel - Handles HTTP Requests
- * 
+ *
  * Processes incoming HTTP requests through the routing system,
  * middleware pipeline, and returns appropriate responses.
  */
@@ -30,7 +30,7 @@ class HttpKernel
             // Simple routing based on query parameter for now
             $page = $request->query->get('page', 'home');
             $name = $request->query->get('name', 'Developer');
-            
+
             switch ($page) {
                 case 'users':
                     return $this->handleUsersPage($request);
@@ -39,7 +39,7 @@ class HttpKernel
                 default:
                     return $this->handleWelcomePage($request, $name);
             }
-            
+
         } catch (\Throwable $e) {
             return $this->handleException($e);
         }
@@ -52,19 +52,15 @@ class HttpKernel
     {
         try {
             $viewFactory = $this->container->make('view');
-            $view = $viewFactory('welcome', [
-                'title' => 'Welcome to Refynd',
+            $view = $viewFactory('welcome', ['title' => 'Welcome to Refynd',
                 'name' => $name,
-                'features' => [
-                    'Dependency Injection Container',
+                'features' => ['Dependency Injection Container',
                     'Ledger ORM with Active Record',
                     'Prism Template Engine',
                     'Smith CLI Tool',
                     'Module System',
-                    'Environment Configuration'
-                ],
-                'showAdvanced' => $request->query->has('advanced')
-            ]);
+                    'Environment Configuration'],
+                'showAdvanced' => $request->query->has('advanced')]);
 
             return new Response($view->render());
         } catch (\Throwable $e) {
@@ -80,18 +76,14 @@ class HttpKernel
     {
         try {
             // Example users data (would come from Ledger ORM)
-            $users = [
-                ['id' => 1, 'name' => 'John Doe', 'email' => 'john@example.com', 'created_at' => '2025-08-01 10:00:00'],
+            $users = [['id' => 1, 'name' => 'John Doe', 'email' => 'john@example.com', 'created_at' => '2025-08-01 10:00:00'],
                 ['id' => 2, 'name' => 'Jane Smith', 'email' => 'jane@example.com', 'created_at' => '2025-08-01 11:30:00'],
-                ['id' => 3, 'name' => 'Bob Johnson', 'email' => 'bob@example.com', 'created_at' => '2025-08-01 12:15:00'],
-            ];
+                ['id' => 3, 'name' => 'Bob Johnson', 'email' => 'bob@example.com', 'created_at' => '2025-08-01 12:15:00'],];
 
             $viewFactory = $this->container->make('view');
-            $view = $viewFactory('users', [
-                'title' => 'User Management - Refynd',
+            $view = $viewFactory('users', ['title' => 'User Management - Refynd',
                 'users' => $users,
-                'activeCount' => count($users)
-            ]);
+                'activeCount' => count($users)]);
 
             return new Response($view->render());
         } catch (\Throwable $e) {
@@ -105,20 +97,16 @@ class HttpKernel
     protected function handleAboutPage(Request $request): Response
     {
         try {
-            $features = [
-                'Engine-Driven Architecture',
+            $features = ['Engine-Driven Architecture',
                 'Module System',
                 'Dependency Injection',
                 'Ledger ORM',
                 'Prism Templates',
-                'Smith CLI Tool'
-            ];
+                'Smith CLI Tool'];
 
             $viewFactory = $this->container->make('view');
-            $view = $viewFactory('about', [
-                'title' => 'About Refynd Framework',
-                'features' => $features
-            ]);
+            $view = $viewFactory('about', ['title' => 'About Refynd Framework',
+                'features' => $features]);
 
             return new Response($view->render());
         } catch (\Throwable $e) {
@@ -135,8 +123,8 @@ class HttpKernel
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to Refynd</title>
+    <meta name="viewport" content="width = device-width, initial-scale = 1.0">
+    <title > Welcome to Refynd</title>
     <style>
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -158,7 +146,7 @@ class HttpKernel
             font-size: 4rem;
             font-weight: 700;
             margin-bottom: 1rem;
-            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
         }
         .tagline {
             font-size: 1.5rem;
@@ -188,9 +176,9 @@ class HttpKernel
         <h1 class="logo">Refynd</h1>
         <p class="tagline">Craft Exceptional Applications</p>
         <p class="description">
-            Welcome to Refynd - a powerful, elegant, and expressive PHP framework 
-            designed for crafting exceptional web applications. With its modular 
-            architecture and intuitive design, Refynd empowers developers to build 
+            Welcome to Refynd - a powerful, elegant, and expressive PHP framework
+            designed for crafting exceptional web applications. With its modular
+            architecture and intuitive design, Refynd empowers developers to build
             robust applications with confidence and joy.
         </p>
         <p class="version">Refynd Framework v1.0.0-alpha</p>
@@ -206,15 +194,13 @@ class HttpKernel
     {
         // For now, return a simple error response
         // This will be expanded to include proper error handling, logging, etc.
-        
+
         $content = sprintf(
-            '<h1>Application Error</h1><p>%s</p><pre>%s</pre>',
+            '<h1 > Application Error</h1 >< p>%s</p >< pre>%s</pre>',
             htmlspecialchars($e->getMessage()),
             htmlspecialchars($e->getTraceAsString())
         );
 
-        return new Response($content, 500, [
-            'Content-Type' => 'text/html; charset=UTF-8'
-        ]);
+        return new Response($content, 500, ['Content-Type' => 'text/html; charset = UTF-8']);
     }
 }

@@ -7,7 +7,7 @@ use Refynd\Database\Collection;
 
 /**
  * BelongsTo - Inverse one-to-many relationship
- * 
+ *
  * Represents an inverse one-to-many relationship where the model
  * belongs to another model.
  */
@@ -20,7 +20,7 @@ class BelongsTo extends Relation
     {
         $this->foreignKey = $foreignKey;
         $this->ownerKey = $ownerKey;
-        
+
         parent::__construct($parent, $related);
     }
 
@@ -60,7 +60,7 @@ class BelongsTo extends Relation
 
     /**
      * Match the eagerly loaded results to their parents
-     * @param Collection<int, Model> $results
+     * @param Collection < int, Model> $results
      */
     public function match(array $models, Collection $results, string $relation): array
     {
@@ -68,7 +68,7 @@ class BelongsTo extends Relation
 
         foreach ($models as $model) {
             $key = $model->getAttribute($this->foreignKey);
-            
+
             if (isset($dictionary[$key])) {
                 $model->setRelation($relation, $dictionary[$key]);
             }
@@ -91,7 +91,7 @@ class BelongsTo extends Relation
     public function associate(Model $model): Model
     {
         $this->parent->setAttribute($this->foreignKey, $model->getAttribute($this->ownerKey));
-        
+
         return $this->parent->setRelation($this->getRelationName(), $model);
     }
 
@@ -101,7 +101,7 @@ class BelongsTo extends Relation
     public function dissociate(): Model
     {
         $this->parent->setAttribute($this->foreignKey, null);
-        
+
         return $this->parent->setRelation($this->getRelationName(), null);
     }
 
@@ -115,7 +115,7 @@ class BelongsTo extends Relation
 
     /**
      * Build the model dictionary for matching
-     * @param Collection<int, Model> $results
+     * @param Collection < int, Model> $results
      */
     protected function buildDictionary(Collection $results): array
     {

@@ -17,7 +17,7 @@ use Refynd\Auth\Middleware\GuestMiddleware;
 
 /**
  * AuthModule - Authentication and Hashing Module
- * 
+ *
  * Provides authentication, authorization, and password hashing services.
  * Integrates guards, user providers, and middleware into the application.
  */
