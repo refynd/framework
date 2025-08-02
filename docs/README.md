@@ -8,6 +8,9 @@ Welcome to the comprehensive documentation for Refynd.
 - **[Current Capabilities](CURRENT_CAPABILITIES.md)** - Complete overview of all framework components and features
 - **[What You Can Build](WHAT_YOU_CAN_BUILD.md)** - Detailed examples and application patterns
 
+### Feature Guides
+- **[WebSocket Rate Limiting](WEBSOCKET_RATE_LIMITING.md)** - Comprehensive guide to WebSocket rate limiting and abuse prevention
+
 ### Development Resources
 - **[Contributing Guide](../CONTRIBUTING.md)** - Guidelines for contributing to Refynd
 - **[License](../LICENSE)** - MIT license terms

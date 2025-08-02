@@ -10,11 +10,13 @@ class WebSocketServer
     private string $host;
     private int $port;
     private bool $running = true;
+    private RateLimiter $rateLimiter;
 
-    public function __construct(string $host = '127.0.0.1', int $port = 8080)
+    public function __construct(string $host = '127.0.0.1', int $port = 8080, ?RateLimiter $rateLimiter = null)
     {
         $this->host = $host;
         $this->port = $port;
+        $this->rateLimiter = $rateLimiter ?? new RateLimiter();
     }
 
     public function start(): void
@@ -51,11 +53,24 @@ class WebSocketServer
                         continue;
                     }
 
+                    // Check rate limit before processing message
+                    if (!$this->rateLimiter->isAllowed($client)) {
+                        $this->sendRateLimitError($client);
+                        continue;
+                    }
+
                     $message = $this->decode($data);
                     if ($message) {
                         $this->handleMessage($client, $message);
                     }
                 }
+            }
+            
+            // Cleanup rate limiter periodically
+            static $lastCleanup = 0;
+            if (time() - $lastCleanup > 300) { // Every 5 minutes
+                $this->rateLimiter->cleanup();
+                $lastCleanup = time();
             }
         }
     }
@@ -80,6 +95,31 @@ class WebSocketServer
     {
         $encodedMessage = $this->encode($message);
         @socket_write($client, $encodedMessage, strlen($encodedMessage));
+    }
+
+    public function sendRateLimitError($client): void
+    {
+        $remainingRequests = $this->rateLimiter->getRemainingRequests($client);
+        $blockedUntil = $this->rateLimiter->getBlockedUntil($client);
+        
+        $error = [
+            'type' => 'rate_limit_error',
+            'message' => 'Rate limit exceeded',
+            'remaining_requests' => $remainingRequests,
+            'blocked_until' => $blockedUntil > 0 ? date('c', $blockedUntil) : null
+        ];
+        
+        $this->sendToClient($client, json_encode($error));
+    }
+
+    public function getRateLimiterStats(): array
+    {
+        return $this->rateLimiter->getStats();
+    }
+
+    public function resetRateLimit($client = null): void
+    {
+        $this->rateLimiter->reset($client);
     }
 
     public function joinChannel($client, string $channel): void
@@ -113,14 +153,47 @@ class WebSocketServer
         switch ($message['type'] ?? '') {
             case 'join':
                 $this->joinChannel($client, $message['channel']);
+                $this->sendStatusResponse($client, 'joined', $message['channel']);
                 break;
             case 'leave':
                 $this->leaveChannel($client, $message['channel']);
+                $this->sendStatusResponse($client, 'left', $message['channel']);
                 break;
             case 'message':
                 $this->broadcast($message['data'], $message['channel'] ?? null);
                 break;
+            case 'stats':
+                $this->sendStatsResponse($client);
+                break;
         }
+    }
+
+    private function sendStatusResponse($client, string $action, string $channel): void
+    {
+        $response = [
+            'type' => 'status',
+            'action' => $action,
+            'channel' => $channel,
+            'rate_limit' => [
+                'remaining_requests' => $this->rateLimiter->getRemainingRequests($client)
+            ]
+        ];
+        
+        $this->sendToClient($client, json_encode($response));
+    }
+
+    private function sendStatsResponse($client): void
+    {
+        $stats = [
+            'type' => 'stats',
+            'server' => [
+                'connected_clients' => count($this->clients),
+                'channels' => count($this->channels)
+            ],
+            'rate_limiter' => $this->rateLimiter->getStats()
+        ];
+        
+        $this->sendToClient($client, json_encode($stats));
     }
 
     private function isClientInChannel($client, string $channel): bool
@@ -196,6 +269,10 @@ class WebSocketServer
     private function disconnect(int $key): void
     {
         $client = $this->clients[$key];
+        
+        // Clean up rate limiter data for this client
+        $this->rateLimiter->reset($client);
+        
         socket_close($client);
         unset($this->clients[$key]);
         
