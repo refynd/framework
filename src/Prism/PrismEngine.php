@@ -94,7 +94,7 @@ class PrismEngine
     /**
      * Add global variables available to all templates
      */
-    public function addGlobal(string $key, $value): void
+    public function addGlobal(string $key, mixed $value): void
     {
         $this->globals[$key] = $value;
     }
@@ -276,7 +276,7 @@ class PrismEngine
     /**
      * Apply a filter to a value
      */
-    public function applyFilter(string $filter, $value, ...$args)
+    public function applyFilter(string $filter, mixed $value, mixed ...$args): mixed
     {
         $filters = $this->compiler->getFilters();
         

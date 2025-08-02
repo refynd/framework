@@ -189,7 +189,13 @@ class PrismCompiler
             'capitalize' => fn($value) => ucfirst($value),
             'length' => fn($value) => is_countable($value) ? count($value) : strlen($value),
             'reverse' => fn($value) => is_array($value) ? array_reverse($value) : strrev($value),
-            'sort' => fn($value) => is_array($value) ? (sort($value) ? $value : $value) : $value,
+            'sort' => function($value) {
+                if (is_array($value)) {
+                    sort($value);
+                    return $value;
+                }
+                return $value;
+            },
             'json' => fn($value) => json_encode($value, JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP),
             'date' => fn($value, $format = 'Y-m-d') => date($format, is_numeric($value) ? $value : strtotime($value)),
             'default' => fn($value, $default = '') => $value ?: $default,

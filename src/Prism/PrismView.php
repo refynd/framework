@@ -24,7 +24,7 @@ class PrismView
     /**
      * Add data to the view
      */
-    public function with(string $key, $value): self
+    public function with(string $key, mixed $value): self
     {
         $this->data[$key] = $value;
         return $this;

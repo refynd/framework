@@ -146,7 +146,7 @@ if (!function_exists('session')) {
     /**
      * Get session value
      */
-    function session(string $key, $default = null)
+    function session(string $key, mixed $default = null): mixed
     {
         return $_SESSION[$key] ?? $default;
     }
@@ -156,7 +156,7 @@ if (!function_exists('config')) {
     /**
      * Get configuration value
      */
-    function config(string $key, $default = null)
+    function config(string $key, mixed $default = null): mixed
     {
         static $config = null;
         
@@ -199,7 +199,7 @@ if (!function_exists('dd')) {
     /**
      * Dump and die
      */
-    function dd(...$vars): void
+    function dd(mixed ...$vars): void
     {
         foreach ($vars as $var) {
             var_dump($var);
@@ -212,7 +212,7 @@ if (!function_exists('dump')) {
     /**
      * Dump variable
      */
-    function dump(...$vars): void
+    function dump(mixed ...$vars): void
     {
         foreach ($vars as $var) {
             var_dump($var);
