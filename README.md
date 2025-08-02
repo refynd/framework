@@ -57,8 +57,9 @@ The CLI provides powerful commands for:
 - **Middleware** - Request/response filtering for cross-cutting concerns
 
 ### Data & Persistence
-- **Ledger ORM** - Intuitive Active Record pattern for database interactions
-- **Query Builder** - Fluent interface for complex database operations
+- **Complete ORM** - Enterprise-grade with relationships, collections, and migrations
+- **Query Builder** - Fluent interface for complex database operations  
+- **Schema Management** - Migrations and blueprints for database versioning
 - **Multi-Database** - Support for MySQL, PostgreSQL, and SQLite
 
 ### Performance & Scale
@@ -103,6 +104,31 @@ class UserService
 $service = $container->make(UserService::class);
 ```
 
+### Enhanced ORM System
+
+```php
+use Refynd\Database\Model;
+
+class User extends Model
+{
+    protected array $fillable = ['name', 'email'];
+    
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+}
+
+// Fluent queries with relationships
+$users = User::with(['posts'])
+    ->where('status', 'active')
+    ->get();
+
+// Collections with Laravel-style methods
+$activeUsers = $users->filter(fn($user) => $user->posts->isNotEmpty())
+    ->sortBy('name');
+```
+
 ### Database Operations
 
 ```php
@@ -119,6 +145,21 @@ class User extends Record
             ->first();
     }
 }
+```
+
+### Schema & Migrations
+
+```php
+use Refynd\Database\Schema;
+use Refynd\Database\Blueprint;
+
+// Create tables with fluent syntax
+Schema::create('users', function (Blueprint $table) {
+    $table->id();
+    $table->string('name');
+    $table->string('email')->unique();
+    $table->timestamps();
+});
 ```
 
 ### Caching
@@ -178,6 +219,7 @@ Refynd powers applications that matter:
 
 ## 📚 Documentation
 
+- **[ORM Guide](docs/ORM.md)** - Complete ORM documentation with examples
 - **[Core Capabilities](docs/CURRENT_CAPABILITIES.md)** - Complete component overview
 - **[What You Can Build](docs/WHAT_YOU_CAN_BUILD.md)** - Application examples and patterns
 - **[API Reference](https://github.com/refynd/framework/wiki)** - Detailed API documentation
