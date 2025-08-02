@@ -19,29 +19,47 @@ class ApiModule extends Module
     protected Container $container;
     protected array $config = [];
 
-    protected array $defaultConfig = ['enable_api' => true,
+    protected array $defaultConfig = [
+        'enable_api' => true,
         'default_version' => '1.0',
         'api_prefix' => '/api',
-        'pagination' => ['default_per_page' => 15,
+        'pagination' => [
+            'default_per_page' => 15,
             'max_per_page' => 100,
-            'type' => 'length_aware', // length_aware, simple, cursor],
-        'versioning' => ['strategy' => 'header', // header, path, query
+            'type' => 'length_aware', // length_aware, simple, cursor
+        ],
+        'versioning' => [
+            'strategy' => 'header', // header, path, query
             'header_name' => 'API-Version',
-            'path_pattern' => '/v{version}',],
-        'response' => ['format' => 'json', // json, jsonapi
+            'path_pattern' => '/v{version}',
+        ],
+        'response' => [
+            'format' => 'json', // json, jsonapi
             'include_meta' => true,
             'include_links' => true,
-            'wrap_single_resource' => true,],
-        'features' => ['rate_limiting' => true,
+            'wrap_single_resource' => true,
+        ],
+        'features' => [
+            'rate_limiting' => true,
             'caching' => true,
             'documentation' => true,
-            'validation' => true,],
-        'versions' => ['1.0' => ['features' => ['basic_crud', 'authentication'],
-                'deprecation' => null,],
-            '1.1' => ['features' => ['basic_crud', 'authentication', 'advanced_filtering'],
-                'deprecation' => null,],
-            '2.0' => ['features' => ['basic_crud', 'authentication', 'advanced_filtering', 'real_time'],
-                'deprecation' => null,],],];
+            'validation' => true,
+        ],
+        'versions' => [
+            '1.0' => [
+                'features' => ['basic_crud', 'authentication'],
+                'deprecation' => null,
+            ],
+            '1.1' => [
+                'features' => ['basic_crud', 'authentication', 'advanced_filtering'],
+                'deprecation' => null,
+            ],
+            '2.0' => [
+                'features' => ['basic_crud', 'authentication', 'advanced_filtering', 'real_time'],
+                'deprecation' => null,
+            ],
+        ],
+    ];
 
     /**
      * Register module services
@@ -290,9 +308,13 @@ class ApiResponseBuilder
      */
     public function error(string $message, int $statusCode = 400, ?string $code = null): array
     {
-        return ['error' => ['code' => $code ?: 'error',
+        return [
+            'error' => [
+                'code' => $code ?: 'error',
                 'message' => $message,
-                'status' => $statusCode,],];
+                'status' => $statusCode,
+            ],
+        ];
     }
 
     /**
@@ -300,8 +322,12 @@ class ApiResponseBuilder
      */
     public function paginated(iterable $data, PaginatorInterface $paginator, array $meta = []): array
     {
-        $response = ['data' => $data,
-            'meta' => array_merge(['pagination' => $paginator->toArray(),], $meta),];
+        $response = [
+            'data' => $data,
+            'meta' => array_merge([
+                'pagination' => $paginator->toArray(),
+            ], $meta),
+        ];
 
         if ($this->config['response']['include_links']) {
             $response['links'] = $paginator->getLinks();
@@ -334,9 +360,11 @@ class PaginationResolver
             max(1, (int) ($params['per_page'] ?? $this->config['default_per_page']))
         );
 
-        return ['page' => $page,
+        return [
+            'page' => $page,
             'per_page' => $perPage,
-            'offset' => ($page - 1) * $perPage,];
+            'offset' => ($page - 1) * $perPage,
+        ];
     }
 
     /**
@@ -463,9 +491,11 @@ class ApiDocumentation
      */
     public function endpoint(string $method, string $path, array $info): void
     {
-        $this->endpoints[] = ['method' => strtoupper($method),
+        $this->endpoints[] = [
+            'method' => strtoupper($method),
             'path' => $path,
-            'info' => $info,];
+            'info' => $info,
+        ];
     }
 
     /**
@@ -482,11 +512,15 @@ class ApiDocumentation
     public function generateOpenApi(): array
     {
         // Basic OpenAPI structure
-        return ['openapi' => '3.0.0',
-            'info' => ['title' => 'Refynd API',
+        return [
+            'openapi' => '3.0.0',
+            'info' => [
+                'title' => 'Refynd API',
                 'version' => '1.0.0',
-                'description' => 'API documentation for Refynd framework',],
-            'paths' => $this->generatePaths(),];
+                'description' => 'API documentation for Refynd framework',
+            ],
+            'paths' => $this->generatePaths(),
+        ];
     }
 
     /**
