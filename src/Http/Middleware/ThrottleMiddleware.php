@@ -60,7 +60,7 @@ class ThrottleMiddleware
             'HTTP_X_CLUSTER_CLIENT_IP',  // Cluster
             'HTTP_FORWARDED_FOR',        // Proxy
             'HTTP_FORWARDED',            // Proxy
-            'REMOTE_ADDR'                // Standard];
+            'REMOTE_ADDR'];            // Standard];
 
         foreach ($headers as $header) {
             if (!empty($_SERVER[$header])) {

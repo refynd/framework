@@ -41,7 +41,7 @@ class ApiModule extends Module
             '1.1' => ['features' => ['basic_crud', 'authentication', 'advanced_filtering'],
                 'deprecation' => null,],
             '2.0' => ['features' => ['basic_crud', 'authentication', 'advanced_filtering', 'real_time'],
-                'deprecation' => null,],],];
+                'deprecation' => null,],],],];
 
     /**
      * Register module services
