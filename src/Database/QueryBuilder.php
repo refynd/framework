@@ -18,6 +18,8 @@ class QueryBuilder
     protected ?int $limit = null;
     protected ?int $offset = null;
     protected array $bindings = [];
+    protected ?Model $model = null;
+    protected array $eagerLoad = [];
 
     public function __construct(string $table)
     {
@@ -194,20 +196,84 @@ class QueryBuilder
     /**
      * Execute the query and return all results
      */
-    public function get(): array
+    public function get()
     {
         $sql = $this->toSql();
-        return Ledger::select($sql, $this->bindings);
+        $results = Ledger::select($sql, $this->bindings);
+        
+        if ($this->model) {
+            $models = [];
+            foreach ($results as $result) {
+                $models[] = $this->model->newFromDatabase($result);
+            }
+            
+            $collection = new Collection($models);
+            
+            // Handle eager loading
+            if (!empty($this->eagerLoad)) {
+                $collection = $this->loadRelations($collection);
+            }
+            
+            return $collection;
+        }
+        
+        return $results;
     }
 
     /**
      * Execute the query and return the first result
      */
-    public function first(): ?array
+    public function first()
     {
         $this->limit(1);
         $results = $this->get();
+        
+        if ($results instanceof Collection) {
+            return $results->first();
+        }
+        
         return $results[0] ?? null;
+    }
+
+    /**
+     * Set the model for this query
+     */
+    public function setModel(Model $model): self
+    {
+        $this->model = $model;
+        return $this;
+    }
+
+    /**
+     * Set eager loading relationships
+     */
+    public function with(array $relations): self
+    {
+        $this->eagerLoad = array_merge($this->eagerLoad, $relations);
+        return $this;
+    }
+
+    /**
+     * Load relationships for the collection
+     */
+    protected function loadRelations(Collection $collection): Collection
+    {
+        foreach ($this->eagerLoad as $relation) {
+            if (method_exists($this->model, $relation)) {
+                $relationInstance = $this->model->$relation();
+                
+                if ($relationInstance instanceof Relations\Relation) {
+                    $models = $collection->all();
+                    $relationInstance->addEagerConstraints($models);
+                    $results = $relationInstance->get();
+                    $collection = new Collection(
+                        $relationInstance->match($models, $results, $relation)
+                    );
+                }
+            }
+        }
+        
+        return $collection;
     }
 
     /**
