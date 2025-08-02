@@ -17,13 +17,47 @@ class AppProfile
     protected string $basePath;
     protected string $environment;
 
-    public function __construct(string $basePath, string $environment = 'production')
+    public function __construct(string $basePath = null, string $environment = 'production')
     {
-        $this->basePath = $basePath;
+        $this->basePath = $basePath ?? $this->detectBasePath();
         $this->environment = $environment;
         
         $this->loadEnvironment();
         $this->loadConfiguration();
+    }
+
+    /**
+     * Detect the base path automatically
+     */
+    protected function detectBasePath(): string
+    {
+        // For classes that extend AppProfile, use their location as reference
+        $reflection = new \ReflectionClass($this);
+        $classPath = dirname($reflection->getFileName());
+        
+        // Go up directories until we find composer.json or vendor directory
+        $current = $classPath;
+        $maxLevels = 10; // Prevent infinite loops
+        $level = 0;
+        
+        while ($level < $maxLevels) {
+            if (file_exists($current . '/composer.json') || 
+                file_exists($current . '/vendor') ||
+                file_exists($current . '/public/index.php')) {
+                return $current;
+            }
+            
+            $parent = dirname($current);
+            if ($parent === $current) {
+                break; // Reached filesystem root
+            }
+            
+            $current = $parent;
+            $level++;
+        }
+        
+        // Fallback to current working directory
+        return getcwd() ?: __DIR__;
     }
 
     /**
@@ -34,6 +68,46 @@ class AppProfile
         $environment = $_ENV['REFYND_ENV'] ?? $_SERVER['REFYND_ENV'] ?? 'production';
         
         return new self($basePath, $environment);
+    }
+
+    /**
+     * Get the application name (can be overridden)
+     */
+    public function name(): string
+    {
+        return $this->get('app.name', 'Refynd Application');
+    }
+
+    /**
+     * Get the application version (can be overridden)
+     */
+    public function version(): string
+    {
+        return $this->get('app.version', '1.0.0');
+    }
+
+    /**
+     * Get the application URL (can be overridden)
+     */
+    public function url(): string
+    {
+        return $this->get('app.url', 'http://localhost');
+    }
+
+    /**
+     * Determine if debug mode is enabled (can be overridden)
+     */
+    public function debug(): bool
+    {
+        return (bool) $this->get('app.debug', false);
+    }
+
+    /**
+     * Register application modules (can be overridden)
+     */
+    public function registerModules(\Refynd\Container\Container $container): void
+    {
+        // Default implementation - can be overridden by child classes
     }
 
     /**

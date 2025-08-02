@@ -103,11 +103,15 @@ class Engine
      */
     protected function loadModules(): void
     {
+        // Load modules from configuration
         $modules = $this->profile->get('modules', []);
         
         foreach ($modules as $moduleClass) {
             $this->moduleManager->register($moduleClass);
         }
+        
+        // Allow profile to register additional modules
+        $this->profile->registerModules($this->container);
     }
 
     /**
