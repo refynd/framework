@@ -38,7 +38,7 @@ class QueueWorker
             $queuedJob->increment();
             
             // Set up timeout handling
-            if (method_exists($job, 'getTimeout')) {
+            if ($job instanceof Job) {
                 set_time_limit($job->getTimeout());
             }
             
@@ -57,7 +57,7 @@ class QueueWorker
         $job = $queuedJob->job;
         
         // Check if we should retry
-        $maxTries = method_exists($job, 'getMaxTries') ? $job->getMaxTries() : 3;
+        $maxTries = $job instanceof Job ? $job->getMaxTries() : 3;
         
         if ($queuedJob->shouldRetry($maxTries)) {
             // Re-queue for retry after delay

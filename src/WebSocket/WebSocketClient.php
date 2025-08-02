@@ -5,7 +5,7 @@ namespace Refynd\WebSocket;
 class WebSocketClient
 {
     private string $url;
-    private $socket;
+    private mixed $socket;
     private bool $connected = false;
 
     public function __construct(string $url)

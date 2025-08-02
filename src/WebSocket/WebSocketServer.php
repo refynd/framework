@@ -4,11 +4,12 @@ namespace Refynd\WebSocket;
 
 class WebSocketServer
 {
-    private $socket;
+    private mixed $socket;
     private array $clients = [];
     private array $channels = [];
     private string $host;
     private int $port;
+    private bool $running = true;
 
     public function __construct(string $host = '127.0.0.1', int $port = 8080)
     {
@@ -25,7 +26,7 @@ class WebSocketServer
 
         echo "WebSocket server started on {$this->host}:{$this->port}\n";
 
-        while (true) {
+        while ($this->running) {
             $sockets = array_merge([$this->socket], $this->clients);
             $write = null;
             $except = null;
@@ -59,7 +60,12 @@ class WebSocketServer
         }
     }
 
-    public function broadcast(string $message, string $channel = null): void
+    public function stop(): void
+    {
+        $this->running = false;
+    }
+
+    public function broadcast(string $message, ?string $channel = null): void
     {
         $encodedMessage = $this->encode($message);
         

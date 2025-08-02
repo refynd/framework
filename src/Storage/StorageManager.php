@@ -12,7 +12,7 @@ class StorageManager
         $this->disks['local'] = new LocalStorage(getcwd() . '/storage/app');
     }
 
-    public function disk(string $name = null): StorageInterface
+    public function disk(?string $name = null): StorageInterface
     {
         $name = $name ?: $this->defaultDisk;
         

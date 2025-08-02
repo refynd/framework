@@ -16,8 +16,8 @@ class QueuedJob
         string $queue,
         JobInterface $job,
         int $attempts = 0,
-        int $createdAt = null,
-        int $availableAt = null
+        ?int $createdAt = null,
+        ?int $availableAt = null
     ) {
         $this->id = $id;
         $this->queue = $queue;

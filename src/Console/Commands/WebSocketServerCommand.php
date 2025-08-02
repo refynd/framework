@@ -38,11 +38,11 @@ class WebSocketServerCommand extends Command
         $server = new WebSocketServer($host, $port);
         
         // Handle graceful shutdown
-        pcntl_signal(SIGTERM, function() {
-            exit(0);
+        pcntl_signal(SIGTERM, function() use ($server) {
+            $server->stop();
         });
-        pcntl_signal(SIGINT, function() {
-            exit(0);
+        pcntl_signal(SIGINT, function() use ($server) {
+            $server->stop();
         });
         
         $server->start();
